@@ -26,7 +26,7 @@ public class App extends Application {
         myGrid.setHgap(8);
 
         //the amount euro label and textfield
-        Label amountLabel = new Label("Amount \0xE2:");
+        Label amountLabel = new Label("Amount €:");
         myGrid.add(amountLabel,0,0);
         TextField amount = new TextField();
         amount.setPromptText("amount");
