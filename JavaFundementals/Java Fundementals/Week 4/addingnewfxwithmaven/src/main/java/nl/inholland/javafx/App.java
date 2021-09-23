@@ -44,6 +44,7 @@ public class App extends Application {
 
         //The secret label that reveals the password
         Label secretLabel = new Label();
+        secretLabel.setVisible(false);
         myGrid.add(secretLabel,0,3);
 
         Button loginButton = new Button("Login");
