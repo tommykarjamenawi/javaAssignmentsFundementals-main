@@ -20,7 +20,7 @@ public class App extends Application {
     public void start(Stage window) throws Exception {
         window.setHeight(200);
         window.setWidth(300);
-        window.setTitle("Java FX Demo");
+        window.setTitle("mandatory login application with password condition");
 
         //Create a layout to be used, in this case a gridpane
         GridPane myGrid = new GridPane();
@@ -63,25 +63,25 @@ public class App extends Application {
                                 String oldValue, String newValue) {
                 String specialChars = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
                 char[] chars = secretLabel.getText().toCharArray();
-                int count1 = 0;
-                int count2 = 0;
-                int count3 = 0;
-                int count4 = 0;
+                int isCorrectLength = 0;
+                int containsDigit = 0;
+                int containsLetter = 0;
+                int containsSpecial = 0;
                 for(char c : chars){
                     String s=String.valueOf(c);
                     if (secretLabel.getText().length() >= 8){
-                        count1 = 1;
+                        isCorrectLength = 1;
                     }
                     if (specialChars.contains(s)){
-                        count4 = 1;
+                        containsSpecial = 1;
                     }
-                    if(Character.isDigit(c) == true){
-                        count2 = 1;
+                    if(Character.isDigit(c)){
+                        containsDigit = 1;
                     }
-                    if(Character.isLetter(c) == true){
-                        count3 = 1;
+                    if(Character.isLetter(c)){
+                        containsLetter = 1;
                     }
-                    if (((count1 == 1) && (count2 == 1) && (count3 == 1) && (count4 == 1))){
+                    if (((isCorrectLength == 1) && (containsDigit == 1) && (containsLetter == 1) && (containsSpecial == 1))){
                         loginButton.setVisible(true);
                     }
                     else{
