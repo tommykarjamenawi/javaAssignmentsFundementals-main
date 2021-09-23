@@ -102,7 +102,7 @@ public class App extends Application {
             }
         });
 
-        // Set grid background color
+        // Set grid background color //
         myGrid.styleProperty().set("-fx-background-color: #0099FF");
 
         //add the grid to the scene, the scene to the stage, and show it
