@@ -110,7 +110,7 @@ public class App extends Application {
 
         // Add stylesheet
         scene.getStylesheets().add("style.css");
-
+        // Scene
         window.setScene(scene);
         window.show();
     }
