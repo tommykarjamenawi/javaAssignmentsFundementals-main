@@ -92,29 +92,26 @@ public class App extends Application {
 
     public boolean checkPassword(String password){
         char[] chars = password.toCharArray();
-        int isCorrectLength = 0;
-        int containsDigit = 0;
-        int containsLetter = 0;
-        int containsSpecial = 0;
+        boolean isCorrectLength = false;
+        boolean containsDigit = false;
+        boolean containsLetter = false;
+        boolean containsSpecial = false;
 
         if (password.length() >= 8){
-            isCorrectLength = 1;
+            isCorrectLength = true;
         }
         for(char c : chars){
             if (!Character.isDigit(c) && !Character.isLetter(c)){
-                containsSpecial = 1;
+                containsSpecial = true;
             }
             if(Character.isDigit(c)){
-                containsDigit = 1;
+                containsDigit = true;
             }
             if(Character.isLetter(c)){
-                containsLetter = 1;
-            }
-            if (((isCorrectLength == 1) && (containsDigit == 1) && (containsLetter == 1) && (containsSpecial == 1))){
-                return true;
+                containsLetter = true;
             }
         }
-        return false;
+        return (isCorrectLength && containsDigit && containsLetter && containsSpecial);
     }
 }
 
