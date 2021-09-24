@@ -44,6 +44,7 @@ public class App extends Application {
 
         //The secret label that reveals the password
         Label secretLabel = new Label();
+        secretLabel.setVisible(false);
         myGrid.add(secretLabel,0,3);
 
         Button loginButton = new Button("Login");
@@ -61,33 +62,7 @@ public class App extends Application {
             @Override
             public void changed(ObservableValue<? extends String> observableValue,
                                 String oldValue, String newValue) {
-                String specialChars = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
-                char[] chars = secretLabel.getText().toCharArray();
-                int isCorrectLength = 0;
-                int containsDigit = 0;
-                int containsLetter = 0;
-                int containsSpecial = 0;
-                for(char c : chars){
-                    String s=String.valueOf(c);
-                    if (secretLabel.getText().length() >= 8){
-                        isCorrectLength = 1;
-                    }
-                    if (specialChars.contains(s)){
-                        containsSpecial = 1;
-                    }
-                    if(Character.isDigit(c)){
-                        containsDigit = 1;
-                    }
-                    if(Character.isLetter(c)){
-                        containsLetter = 1;
-                    }
-                    if (((isCorrectLength == 1) && (containsDigit == 1) && (containsLetter == 1) && (containsSpecial == 1))){
-                        loginButton.setVisible(true);
-                    }
-                    else{
-                        loginButton.setVisible(false);
-                    }
-                }
+                loginButton.setVisible(checkPassword(passwordField.getText()));
             }
         });
 
@@ -102,7 +77,7 @@ public class App extends Application {
             }
         });
 
-        // Set grid background color
+        // Set grid background color //
         myGrid.styleProperty().set("-fx-background-color: #0099FF");
 
         //add the grid to the scene, the scene to the stage, and show it
@@ -110,8 +85,36 @@ public class App extends Application {
 
         // Add stylesheet
         scene.getStylesheets().add("style.css");
-
+        // Scene
         window.setScene(scene);
         window.show();
     }
+
+    public boolean checkPassword(String password){
+        char[] chars = password.toCharArray();
+        int isCorrectLength = 0;
+        int containsDigit = 0;
+        int containsLetter = 0;
+        int containsSpecial = 0;
+
+        if (password.length() >= 8){
+            isCorrectLength = 1;
+        }
+        for(char c : chars){
+            if (!Character.isDigit(c) && !Character.isLetter(c)){
+                containsSpecial = 1;
+            }
+            if(Character.isDigit(c)){
+                containsDigit = 1;
+            }
+            if(Character.isLetter(c)){
+                containsLetter = 1;
+            }
+            if (((isCorrectLength == 1) && (containsDigit == 1) && (containsLetter == 1) && (containsSpecial == 1))){
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
