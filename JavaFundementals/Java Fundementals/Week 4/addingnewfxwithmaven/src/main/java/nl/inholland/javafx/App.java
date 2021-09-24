@@ -62,33 +62,7 @@ public class App extends Application {
             @Override
             public void changed(ObservableValue<? extends String> observableValue,
                                 String oldValue, String newValue) {
-                String specialChars = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
-                char[] chars = secretLabel.getText().toCharArray();
-                int isCorrectLength = 0;
-                int containsDigit = 0;
-                int containsLetter = 0;
-                int containsSpecial = 0;
-                for(char c : chars){
-                    String s=String.valueOf(c);
-                    if (secretLabel.getText().length() >= 8){
-                        isCorrectLength = 1;
-                    }
-                    if (specialChars.contains(s)){
-                        containsSpecial = 1;
-                    }
-                    if(Character.isDigit(c)){
-                        containsDigit = 1;
-                    }
-                    if(Character.isLetter(c)){
-                        containsLetter = 1;
-                    }
-                    if (((isCorrectLength == 1) && (containsDigit == 1) && (containsLetter == 1) && (containsSpecial == 1))){
-                        loginButton.setVisible(true);
-                    }
-                    else{
-                        loginButton.setVisible(false);
-                    }
-                }
+                loginButton.setVisible(checkPassword(passwordField.getText()));
             }
         });
 
@@ -115,4 +89,32 @@ public class App extends Application {
         window.setScene(scene);
         window.show();
     }
+
+    public boolean checkPassword(String password){
+        char[] chars = password.toCharArray();
+        int isCorrectLength = 0;
+        int containsDigit = 0;
+        int containsLetter = 0;
+        int containsSpecial = 0;
+
+        if (password.length() >= 8){
+            isCorrectLength = 1;
+        }
+        for(char c : chars){
+            if (!Character.isDigit(c) && !Character.isLetter(c)){
+                containsSpecial = 1;
+            }
+            if(Character.isDigit(c)){
+                containsDigit = 1;
+            }
+            if(Character.isLetter(c)){
+                containsLetter = 1;
+            }
+            if (((isCorrectLength == 1) && (containsDigit == 1) && (containsLetter == 1) && (containsSpecial == 1))){
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
