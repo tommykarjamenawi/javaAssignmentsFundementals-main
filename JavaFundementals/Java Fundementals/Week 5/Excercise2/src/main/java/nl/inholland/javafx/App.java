@@ -4,114 +4,92 @@ import javafx.application.Application;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
     @Override
     public void start(Stage window) throws Exception {
-        window.setHeight(200);
-        window.setWidth(300);
-        window.setTitle("mandatory login application with password condition");
+        Database db = new Database();
+        ObservableList<Person> people = FXCollections.observableArrayList(db.getPeople());
 
-        //Create a layout to be used, in this case a gridpane
-        GridPane myGrid = new GridPane();
-        myGrid.setPadding(new Insets(10,10,10,10));
-        myGrid.setVgap(10);
-        myGrid.setHgap(8);
+        Stage stage = new Stage();
+        stage.setTitle("People Manager");
+        stage.setMinWidth(250);
+        VBox layout = new VBox();
+        layout.setPadding(new Insets(10));
 
-        //the username label and textfield
-        Label userLabel = new Label("Username:");
-        myGrid.add(userLabel,0,0);
-        TextField userName = new TextField();
-        userName.setPromptText("username");
-        myGrid.add(userName,1,0);
+        TableView<Person> tableView = new TableView<>();
+        TableColumn<Person, String> firstNameColumn = new TableColumn<>("First name");
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        TableColumn<Person, String> lastNameColumn = new TableColumn<>("Last name");
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        TableColumn<Person, String> birthDateColumn = new TableColumn<>("Birth date");
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+        tableView.getColumns().addAll(firstNameColumn, lastNameColumn, birthDateColumn);
 
-        //The password label and field
-        Label passwordLabel = new Label("Password:");
-        myGrid.add(passwordLabel,0,1);
-        PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("enter password");
-        myGrid.add(passwordField,1,1);
+        TextField firstNameInput = new TextField();
+        firstNameInput.setPromptText("First name");
+        TextField lastNameInput = new TextField();
+        lastNameInput.setPromptText("Last name");
+        DatePicker birthdateInput = new DatePicker();
+        birthdateInput.setPromptText("Birth date");
+        Button addButton = new Button("Add");
+        Button deleteButton = new Button("Delete");
 
-        //The secret label that reveals the password
-        Label secretLabel = new Label();
-        secretLabel.setVisible(false);
-        myGrid.add(secretLabel,0,3);
+        addButton.getStyleClass().add("customButton");
+        deleteButton.setId("specialButton");
+        tableView.setItems(people);
 
-        Button loginButton = new Button("Login");
-        loginButton.getStyleClass().add("customButton");
-        loginButton.setId("specialButton");
-
-        loginButton.setVisible(false);
-        myGrid.add(loginButton,1,2);
-
-        //create a StringProperty
-        StringProperty passwordProperty = passwordField.textProperty();
-
-        //add the listener to this property
-        passwordProperty.addListener(new ChangeListener<String>() {
+        addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void changed(ObservableValue<? extends String> observableValue,
-                                String oldValue, String newValue) {
-                loginButton.setVisible(checkPassword(passwordField.getText()));
+            public void handle(ActionEvent event) {
+                // create a new person with the data from the input fields
+                Person newPerson = new Person(firstNameInput.getText(), lastNameInput.getText(), birthdateInput.getValue());
+
+                // add the person to the list
+                people.add(newPerson);
+                //tableView.getItems().clear();
+                tableView.setItems(people);
+                // clear the input fields. When done, you might try the delete button?
+                firstNameInput.clear();
+                lastNameInput.clear();
+                birthdateInput.setValue(null);
+                tableView.setItems(people);
             }
         });
 
-        //bind the listener to the text property of the new label
-        secretLabel.textProperty().bind(passwordProperty);
-
-        //let the button do something
-        loginButton.setOnAction(new EventHandler<ActionEvent>() {
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                System.out.println(userName.getText());
+                ObservableList<Person> selectedPeople =
+                        tableView.getSelectionModel().getSelectedItems();
+                people.removeAll(selectedPeople);
             }
         });
 
-        // Set grid background color //
-        myGrid.styleProperty().set("-fx-background-color: #0099FF");
+        HBox form = new HBox();
+        form.setPadding(new Insets(10));
+        form.setSpacing(10);
+        form.getChildren().addAll(firstNameInput, lastNameInput, birthdateInput, addButton, deleteButton);
 
-        //add the grid to the scene, the scene to the stage, and show it
-        Scene scene = new Scene(myGrid);
+        layout.getChildren().add(tableView);
+        layout.getChildren().add(form);
 
-        // Add stylesheet
+        Scene scene = new Scene(layout);
         scene.getStylesheets().add("style.css");
-        // Scene
-        window.setScene(scene);
-        window.show();
-    }
-
-    public boolean checkPassword(String password){
-        char[] chars = password.toCharArray();
-        boolean isCorrectLength = false;
-        boolean containsDigit = false;
-        boolean containsLetter = false;
-        boolean containsSpecial = false;
-
-        if (password.length() >= 8){
-            isCorrectLength = true;
-        }
-        for(char c : chars){
-            if (!Character.isDigit(c) && !Character.isLetter(c)){
-                containsSpecial = true;
-            }
-            if(Character.isDigit(c)){
-                containsDigit = true;
-            }
-            if(Character.isLetter(c)){
-                containsLetter = true;
-            }
-        }
-        return (isCorrectLength && containsDigit && containsLetter && containsSpecial);
+        stage.setScene(scene);
+        stage.show();
     }
 }
 
