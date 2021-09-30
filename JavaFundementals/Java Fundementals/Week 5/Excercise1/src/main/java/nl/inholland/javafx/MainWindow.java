@@ -47,7 +47,9 @@ public class MainWindow {
         DatePicker birthdateInput = new DatePicker();
         birthdateInput.setPromptText("Birth date");
         Button addButton = new Button("Add");
+        addButton.setMinWidth(90);
         Button deleteButton = new Button("Delete");
+        deleteButton.setMinWidth(90);
 
         addButton.getStyleClass().add("customButton");
         deleteButton.setId("specialButton");
