@@ -1,0 +1,30 @@
+.root{
+    -fx-font-family: "Broadway";
+    -fx-font-size: 12pt;
+    -fx-text-background-color: #1a1a28;
+    -fx-background-color: #6096a9;
+}
+.label{
+
+}
+
+.table-view .column-header-background .filler .corner{
+    -fx-column-halignment: center;
+    -fx-background-color: transparent;
+
+}
+
+.button{
+
+}
+.menu-bar,.menu,.menu-item{
+    -fx-background-color: #9797ff;
+}
+.menu:hover, .menu-item:hover{
+    -fx-background-color: #6222e6;
+}
+#tester{
+    -fx-font-family: "Broadway";
+    -fx-font-size: 30pt;
+    -fx-text-background-color: #4040d8;
+}
