@@ -1,6 +1,6 @@
 .root{
-    -fx-font-family: "Broadway";
-    -fx-font-size: 12pt;
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 11pt;
     -fx-text-background-color: #1a1a28;
     -fx-background-color: #6096a9;
 }
@@ -11,7 +11,6 @@
 .table-view .column-header-background .filler .corner{
     -fx-column-halignment: center;
     -fx-background-color: transparent;
-
 }
 
 .button{
@@ -24,7 +23,7 @@
     -fx-background-color: #6222e6;
 }
 #tester{
-    -fx-font-family: "Broadway";
-    -fx-font-size: 30pt;
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 20pt;
     -fx-text-background-color: #4040d8;
 }

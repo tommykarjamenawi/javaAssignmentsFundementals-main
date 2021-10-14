@@ -19,23 +19,6 @@ public class NavigationBar {
     }
 
     public MenuBar getMenuBar(Person user){
-        //MenuItem logout1 = new MenuItem("Logout...");
-        /*if (user.getRole().equals("admin")){ // admin menubar
-            MenuItem showings = new MenuItem("Manage showings");
-            MenuItem movies = new MenuItem("Manage movies");
-
-            admin.getItems().addAll(showings, movies);
-            logout.getItems().addAll(logout1);
-            menuBar.getMenus().addAll(admin,help,logout);
-        }
-        else{ // user menubar
-            // Create menubar items when clicked
-            MenuItem about = new MenuItem("About");
-            //add items to the menubar
-            help.getItems().addAll(about);
-            logout.getItems().addAll(logout1);
-            menuBar.getMenus().addAll(help,logout);
-        }*/
         MenuItem showings = new MenuItem("Manage showings");
         MenuItem movies = new MenuItem("Manage movies");
         MenuItem about = new MenuItem("About");
@@ -45,13 +28,12 @@ public class NavigationBar {
         admin.getItems().addAll(showings, movies);
         logout.getItems().addAll(logout1);
         menuBar.getMenus().addAll(admin,help,logout);
-        if (user.getRole().equals("user")){
+        if (user.getRole().equals("user")){ // remove menuitem form the menuBar on the user role
             admin.setVisible(false);
         }
         else{
             help.setVisible(false);
         }
-
         return menuBar;
     }
 }

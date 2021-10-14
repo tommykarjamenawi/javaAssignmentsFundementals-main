@@ -15,29 +15,21 @@ import javafx.util.converter.LocalDateTimeStringConverter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class RoomTableView {
-    public TableView<Room> room1View;
-    public TableView<Room> room2View;
+public class Room1TableView {
+    private final TableView<Room> room1View;
+    //private final TableView<Room> room2View;
 
     public TableView<Room> getRoom1View() {
         return room1View;
     }
-    public TableView<Room> getRoom2View() {
+    //public TableView<Room> getRoom2View() { return room2View; }
 
-        return room2View;
-    }
-
-    public RoomTableView(ObservableList<Movie> movies1, ObservableList<Movie> movies2) {
+    public Room1TableView(ObservableList<Movie> movies1) {
         room1View = new TableView<>();
-        room2View = new TableView<>();
 
         ObservableList<Room> room1 = FXCollections.observableArrayList();
-        ObservableList<Room> room2 = FXCollections.observableArrayList();
         for (Movie movie : movies1){
             room1.add(new Room(LocalDateTime.parse("2021-05-21T10:30:00"), LocalDateTime.parse("2021-05-21T11:30:00"), movie, 200));
-        }
-        for (Movie movie : movies2){
-            room2.add(new Room(LocalDateTime.parse("2021-05-21T15:30:00"), LocalDateTime.parse("2021-05-21T16:30:00"), movie, 100));
         }
 
         TableColumn<Room, LocalDateTime> startColumn = new TableColumn<>("Start");
@@ -50,11 +42,8 @@ public class RoomTableView {
         seatsColumn.setCellValueFactory(new PropertyValueFactory<>("seats"));
         TableColumn<Room, Double> priceColumn = new TableColumn<>("Price");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-        //tableView.getColumns().addAll(startColumn, endColumn, titleColumn, seatsColumn, priceColumn);
+
         room1View.getColumns().addAll(startColumn, endColumn, titleColumn, seatsColumn, priceColumn);
         room1View.setItems(room1);
-
-        room2View.getColumns().addAll(startColumn, endColumn, titleColumn, seatsColumn, priceColumn);
-        room2View.setItems(room2);
     }
 }

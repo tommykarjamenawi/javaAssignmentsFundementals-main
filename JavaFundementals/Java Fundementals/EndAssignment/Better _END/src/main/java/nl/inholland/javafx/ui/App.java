@@ -28,7 +28,6 @@ public class App extends Application {
         gridPane.setPadding(new Insets(10));
         gridPane.setVgap(10);
         gridPane.setHgap(8);
-        //gridPane.styleProperty().set("-fx-background-color: #182128");
 
         // Create components
         Label userLabel = new Label("Username:");
@@ -42,7 +41,7 @@ public class App extends Application {
         passwordInput.setPromptText("Enter your password...");
         loginButton.setDefaultButton(true);
 
-        // When button is clicked
+        // Login button click event
         loginButton.setOnAction(actionEvent -> {
             if (!userInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
                 Person user = personService.validateUser(userInput.getText(), passwordInput.getText());
@@ -50,12 +49,12 @@ public class App extends Application {
                     new MainWindow(user);
                     window.close();
                 } else {
-                    new Alert(Alert.AlertType.WARNING, "The username and password do not match! Try again.").show();
+                    new Alert(Alert.AlertType.WARNING, "Bad Credentials! Try again.").show();
                     userInput.clear();
                     passwordInput.clear();
                 }
             } else {
-                new Alert(Alert.AlertType.INFORMATION, "Please fill in a username and password.").show();
+                new Alert(Alert.AlertType.INFORMATION, "Please provide a username and password.").show();
             }
         });
 

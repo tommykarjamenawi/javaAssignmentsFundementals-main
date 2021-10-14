@@ -108,7 +108,7 @@ public class Database {
         return movies;
     }
     public ObservableList<Movie> getMovies1() {
-        return movies;
+        return movies1;
     }
 
     /*public boolean saveMovies(List<Movie> persons) {
