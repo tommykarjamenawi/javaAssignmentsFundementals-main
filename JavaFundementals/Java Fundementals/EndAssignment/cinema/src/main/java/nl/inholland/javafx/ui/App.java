@@ -78,7 +78,6 @@ public class App extends Application {
         gridPane.add(userInput, 1, 0);
         gridPane.add(passwordInput, 1, 1);
         gridPane.add(loginButton, 1, 2);
-        //gridPane.getStylesheets().add("style.css");
 
         // Set scene
         Scene scene = new Scene(gridPane);

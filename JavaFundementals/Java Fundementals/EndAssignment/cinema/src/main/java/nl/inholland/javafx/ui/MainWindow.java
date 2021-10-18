@@ -33,13 +33,7 @@ public class MainWindow {
         BorderPane container = new BorderPane();
         // Set wrapper
         VBox vbox = new VBox(10);
-        HBox hBox = new HBox(10);
-        VBox vboxBottom = new VBox(5);
-        vboxBottom.setId("bottomLayout");
-        vboxBottom.setStyle("-fx-background-color: #843939;");
-        HBox insidVbox = new HBox(10);
-        HBox insidVbox1 = new HBox(10);
-
+        HBox bottomHbox = new HBox(10);
         // call class NavigationBar top get the correct menuBar
         NavigationBar navigationBar = new NavigationBar();
         MenuBar menuBar = navigationBar.getMenuBar(user);
@@ -51,12 +45,11 @@ public class MainWindow {
         Label room2Label = new Label("room 2");
         room1Label.setId("room1Label");
         room2Label.setId("room2Label");
-        HBox aboveTable = new HBox(40);
 
+        // make tableviews
         RoomTable roomTable = new RoomTable(db.getMovies(), 200);
         TableView room1 = roomTable.getTableViewRoom();
         room1.setMinWidth(650);
-
         ObservableList<Movie> movies = db.getMovies();
         Collections.reverse(movies); // reverse the list
         RoomTable roomTable2 = new RoomTable(movies, 100);
@@ -66,7 +59,6 @@ public class MainWindow {
 
         // add objects to the wrappers
         vbox.getChildren().addAll(menuBar, purchaseLabel);
-        hBox.getChildren().addAll(room1, room2);
 
         // Tableview click events
         room1.setOnMouseClicked((MouseEvent event) -> {
@@ -77,7 +69,7 @@ public class MainWindow {
                 roomHeader = new Label(text);
                 movieHeader = new Label("Movie title");
                 selectedMovieHeader = new Label(selectedMovie.getTitle());
-                insidVbox.getChildren().addAll(titleHeader, roomHeader, movieHeader, selectedMovieHeader);
+                bottomHbox.getChildren().addAll(titleHeader, roomHeader, movieHeader, selectedMovieHeader);
             }
         });
         room2.setOnMouseClicked((MouseEvent event) -> {
@@ -88,12 +80,9 @@ public class MainWindow {
                 roomHeader = new Label(text);
                 movieHeader = new Label("Movie title");
                 selectedMovieHeader = new Label(selectedMovie.getTitle());
-                insidVbox.getChildren().addAll(titleHeader, roomHeader, movieHeader, selectedMovieHeader);
+                bottomHbox.getChildren().addAll(titleHeader, roomHeader, movieHeader, selectedMovieHeader);
             }
         });
-
-        aboveTable.getChildren().addAll(room1Label, room2Label);
-        vboxBottom.getChildren().addAll(insidVbox, insidVbox1);
 
         GridPane gridPane = new GridPane();
         gridPane.add(room1Label, 1, 1);
@@ -104,16 +93,13 @@ public class MainWindow {
         // make a border around the center
         gridPane.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.SOLID, null , null)));
 
-
-        VBox center = new VBox(10);
-        center.getChildren().addAll(aboveTable, hBox);
-        insidVbox.setBorder(new Border(new BorderStroke(Color.DARKBLUE, BorderStrokeStyle.SOLID, null , null)));
-        center.setBackground(new Background(new BackgroundFill(Color.web("#DFBF0AFF"), null, Insets.EMPTY)));
+        //bottomHbox.setBorder(new Border(new BorderStroke(Color.DARKBLUE, BorderStrokeStyle.SOLID, null , null)));
+        //center.setBackground(new Background(new BackgroundFill(Color.web("#DFBF0AFF"), null, Insets.EMPTY)));
 
         // add wrapper to container
         container.setTop(vbox);
         container.setCenter(gridPane);
-        container.setBottom(insidVbox);
+        container.setBottom(bottomHbox);
 
         Scene scene = new Scene(container);
         scene.getStylesheets().add("style.css"); // apply css styling

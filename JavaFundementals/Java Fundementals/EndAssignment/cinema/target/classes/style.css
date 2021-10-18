@@ -2,7 +2,7 @@
     -fx-font-family: "Arial Black";
     -fx-font-size: 11pt;
     -fx-text-background-color: #1a1a28;
-    -fx-background-color: #b2afaf;
+    -fx-background-color: #9d9de5;
 }
 .label{
 
@@ -17,7 +17,7 @@
 
 }
 .menu-bar,.menu,.menu-item{
-    -fx-background-color: #9797ff;
+    -fx-background-color: #8585f4;
 }
 .menu:hover, .menu-item:hover{
     -fx-background-color: #6222e6;
