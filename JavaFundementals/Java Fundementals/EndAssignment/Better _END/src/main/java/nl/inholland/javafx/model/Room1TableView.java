@@ -40,6 +40,7 @@ public class Room1TableView {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         TableColumn<Room, Integer> seatsColumn = new TableColumn<>("Seats");
         seatsColumn.setCellValueFactory(new PropertyValueFactory<>("seats"));
+        seatsColumn.setMinWidth(75);
         TableColumn<Room, Double> priceColumn = new TableColumn<>("Price");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 
