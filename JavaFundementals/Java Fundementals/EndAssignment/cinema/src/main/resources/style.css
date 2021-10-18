@@ -2,7 +2,7 @@
     -fx-font-family: "Arial Black";
     -fx-font-size: 11pt;
     -fx-text-background-color: #1a1a28;
-    -fx-background-color: #6096a9;
+    -fx-background-color: #b2afaf;
 }
 .label{
 
@@ -25,5 +25,11 @@
 #tester{
     -fx-font-family: "Arial Black";
     -fx-font-size: 20pt;
-    -fx-text-background-color: #4040d8;
+    -fx-text-background-color: #4040D8FF;
+}
+#bottomLayout{
+    -fx-text-background-color: #dfbf0a;
+}
+#room1Label, #room2Label{
+    -fx-text-background-color: #4040D8FF;
 }

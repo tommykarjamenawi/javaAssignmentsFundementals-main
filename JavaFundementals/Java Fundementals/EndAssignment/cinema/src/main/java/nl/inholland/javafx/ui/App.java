@@ -11,12 +11,26 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
+import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.PersonService;
 import nl.inholland.javafx.model.Person;
+
+import javax.xml.crypto.Data;
 
 public class App extends Application {
     @Override
     public void start(Stage window) throws Exception {
+        fillLoginScreen(window);
+    }
+
+    public Database createDatabase(){
+        return new Database();
+    }
+
+    public void fillLoginScreen(Stage window){
         PersonService personService = new PersonService();
         // Set Window properties
         window.setHeight(200);
@@ -46,7 +60,7 @@ public class App extends Application {
             if (!userInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
                 Person user = personService.validateUser(userInput.getText(), passwordInput.getText());
                 if (user != null) {
-                    new MainWindow(user);
+                    new MainWindow(user, createDatabase());
                     window.close();
                 } else {
                     new Alert(Alert.AlertType.WARNING, "Bad Credentials! Try again.").show();
@@ -64,10 +78,15 @@ public class App extends Application {
         gridPane.add(userInput, 1, 0);
         gridPane.add(passwordInput, 1, 1);
         gridPane.add(loginButton, 1, 2);
-        gridPane.getStylesheets().add("src/main/java/nl/inholland/javafx/files/css/style.css");
+        //gridPane.getStylesheets().add("style.css");
+
         // Set scene
         Scene scene = new Scene(gridPane);
-        //scene.getStylesheets().add("src/main/java/nl/inholland/javafx/files/css/style.css");
+        //add JMetro
+        JMetro jMetro = new JMetro(Style.DARK);
+        gridPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        jMetro.setScene(scene);
+
         window.setScene(scene);
 
         // Show window

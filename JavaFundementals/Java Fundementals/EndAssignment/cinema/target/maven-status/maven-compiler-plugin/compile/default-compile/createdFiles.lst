@@ -1,7 +1,6 @@
 nl\inholland\javafx\model\RoomTable.class
 nl\inholland\javafx\model\Movie.class
 nl\inholland\javafx\logic\PersonService.class
-nl\inholland\javafx\model\room2TableView.class
 nl\inholland\javafx\model\Person.class
 nl\inholland\javafx\model\Room.class
 nl\inholland\javafx\dal\Database.class
