@@ -80,7 +80,6 @@ public class Database {
                     String line = movieScanner.nextLine();
                     String[] movieArray = line.split(",");
                     movies.add(new Movie(movieArray[0], Integer.parseInt(movieArray[1]), Double.parseDouble(movieArray[2])));
-                    //movies.add(new Movie(LocalDateTime.parse(movieArray[0]), LocalDateTime.parse(movieArray[1]), movieArray[2], Integer.parseInt(movieArray[3]), Double.parseDouble(movieArray[4])));
                 } catch (NoSuchElementException nsee) {
                     break;
                 }
