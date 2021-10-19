@@ -26,9 +26,12 @@ public class Room {
         this.seats = seats;
         this.price = movie.getPrice();
     }
+    public Room(){
+
+    }
 
     // Room properties
-    private final Movie movie;
+    private Movie movie;
     private LocalDateTime start;
     private LocalDateTime end;
     private String startTime;

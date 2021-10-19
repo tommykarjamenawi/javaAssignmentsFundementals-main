@@ -37,6 +37,7 @@ public class MainWindow {
     private Database dataBase;
     private Button btnPurchaseTicket;
     private Button btnClearPurchaseField;
+    private GridPane bottomPane;
 
     public MainWindow(Person user, Database db) {
         dataBase = db;
@@ -51,7 +52,8 @@ public class MainWindow {
         BorderPane container = new BorderPane();
         // Set wrapper
         VBox topVbox = new VBox(10);
-        GridPane bottomPane = new GridPane();
+        bottomPane = new GridPane();
+        bottomPane.setVisible(false);
         // call class NavigationBar top get the correct menuBar
         NavigationBar navigationBar = new NavigationBar();
         MenuBar menuBar = navigationBar.getMenuBar(user, windowStage, dataBase);
@@ -63,7 +65,7 @@ public class MainWindow {
         Label room2Label = new Label("room 2");
         room1Label.setId("room1Label");
         room2Label.setId("room2Label");
-        errorMessage = new Label("Select a movie!");
+        errorMessage = new Label("");
 
         // make tableviews
         RoomTable roomTable = new RoomTable(dataBase.getMovies(), 200, dataBase);
@@ -79,59 +81,39 @@ public class MainWindow {
         // add objects to the wrappers
         topVbox.getChildren().addAll(menuBar, purchaseLabel);
 
+        // set default purchase info
+        setDefaultPurchaseInfo();
+
         // Tableview click events
         room1.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 selectedMovie = (Room)room1.getSelectionModel().getSelectedItem();
                 text = "Room 1";
-                titleHeader = new Label("Room");
-                roomHeader = new Label(text);
-                movieHeader = new Label("Movie title");
-                selectedMovieHeader = new Label(selectedMovie.getTitle());
-
-                lblStartHeader = new Label("Start");
-                lblEndHeader = new Label("End");
-                lblStartTime = new Label(selectedMovie.getStartTime());
-                lblEndTime = new Label(selectedMovie.getEndTime());
-                lblSeatsHeader = new Label("No. of seats");
-                lblNameHeader = new Label("Name");
-                nameInput = new TextField();
-                nrOfSeats = new ChoiceBox<>();
-                nrOfSeats.getItems().addAll(1,2,3,4,5,6,7,8,9,10);
+                roomHeader.setText(text);
+                selectedMovieHeader.setText(selectedMovie.getTitle());
+                lblStartTime.setText(selectedMovie.getStartTime());
+                lblEndTime.setText(selectedMovie.getEndTime());
                 nrOfSeats.setValue(0);
-
-                // add content to bottom pane
-                bottomPane.add(titleHeader, 1,0); bottomPane.add(roomHeader, 2,0); bottomPane.add(movieHeader, 3,0); bottomPane.add(selectedMovieHeader, 4,0);
-                bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1); bottomPane.add(btnPurchaseTicket, 5,1);
-                bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2); bottomPane.add(btnClearPurchaseField, 5,2);
+                nameInput.setText("");
+                bottomPane.setVisible(true);
+                addComponentsBottom();
             }
         });
         room2.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 selectedMovie = (Room)room2.getSelectionModel().getSelectedItem();
                 text = "Room 2";
-                titleHeader = new Label("Room");
-                roomHeader = new Label(text);
-                movieHeader = new Label("Movie title");
-                selectedMovieHeader = new Label(selectedMovie.getTitle());
-
-                lblStartHeader = new Label("Start");
-                lblEndHeader = new Label("End");
-                lblStartTime = new Label(selectedMovie.getStartTime());
-                lblEndTime = new Label(selectedMovie.getEndTime());
-                lblSeatsHeader = new Label("No. of seats");
-                lblNameHeader = new Label("Name");
-                nameInput = new TextField();
-                nrOfSeats = new ChoiceBox<>();
-                nrOfSeats.getItems().addAll(0,1,2,3,4,5,6,7,8,9,10);
+                roomHeader.setText(text);
+                selectedMovieHeader.setText(selectedMovie.getTitle());
+                lblStartTime.setText(selectedMovie.getStartTime());
+                lblEndTime.setText(selectedMovie.getEndTime());
                 nrOfSeats.setValue(0);
-
-                // add content to bottom pane
-                bottomPane.add(titleHeader, 1,0); bottomPane.add(roomHeader, 2,0); bottomPane.add(movieHeader, 3,0); bottomPane.add(selectedMovieHeader, 4,0);
-                bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1); bottomPane.add(btnPurchaseTicket, 5,1);
-                bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2); bottomPane.add(btnClearPurchaseField, 5,2);
+                nameInput.setText("");
+                bottomPane.setVisible(true);
+                addComponentsBottom();
             }
         });
+        addComponentsBottom();
 
         // Add tableView to the gridPane that will be located at the center
         GridPane centerPane = new GridPane();
@@ -154,30 +136,50 @@ public class MainWindow {
 
         btnPurchaseTicket.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                TicketOrder order = new TicketOrder(selectedMovie, nrOfSeats.getValue(), nameInput.getText(), LocalDateTime.now());
-                if (order.getRoom().getSeats() == 200){
-                    for(Room room : dataBase.room1){
-                        if (room.getTitle().equals(order.getRoom().getTitle())) {
-                            room.setSeats((room.getSeats() - nrOfSeats.getValue()));
+                if (!nameInput.getText().isEmpty()){
+                    TicketOrder order = new TicketOrder(selectedMovie, nrOfSeats.getValue(), nameInput.getText(), LocalDateTime.now());
+                    if (roomHeader.getText().equals("Room 1")){
+                        for(Room room : dataBase.room1){
+                            if (room.getTitle().equals(order.getRoom().getTitle())) {
+                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){
+                                    errorMessage.setText("Not enough tickets available!");
+                                }
+                                else {
+                                    room.setSeats((room.getSeats() - nrOfSeats.getValue()));
+                                    room1.refresh();
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        for(Room room : dataBase.room2){
+                            if (room.getTitle().equals(order.getRoom().getTitle())) {
+                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){
+                                    errorMessage.setText("Not enough tickets available!");
+                                }
+                                else{
+                                    room.setSeats((room.getSeats() - nrOfSeats.getValue()));
+                                    room2.refresh();
+                                }
+                            }
                         }
                     }
                 }
                 else{
-                    for(Room room : dataBase.room2){
-                        if (room.getTitle().equals(order.getRoom().getTitle())) {
-                            room.setSeats((room.getSeats() - nrOfSeats.getValue()));
-                        }
+                    if (nrOfSeats.getValue() == 0){
+                        errorMessage.setText("Select desired amount of tickets!");
+                    }
+                    else {
+                        errorMessage.setText("Enter your name!");
                     }
                 }
-                room1.refresh();
-                room2.refresh();
+
             }
         });
         btnClearPurchaseField.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                bottomPane.getChildren().removeAll(titleHeader, roomHeader, movieHeader, selectedMovieHeader,
-                        lblStartHeader, lblStartTime, lblSeatsHeader, nrOfSeats, btnPurchaseTicket,
-                        lblEndHeader, lblEndTime, lblNameHeader, nameInput, btnClearPurchaseField);
+                removeComponentsBottom();
+                bottomPane.setVisible(false);
             }
         });
 
@@ -187,6 +189,35 @@ public class MainWindow {
 
         // Show window
         windowStage.show();
+    }
+
+    public void setDefaultPurchaseInfo(){
+        titleHeader = new Label("Room");
+        roomHeader = new Label("");
+        movieHeader = new Label("Movie title");
+        selectedMovieHeader = new Label("");
+        lblStartHeader = new Label("Start");
+        lblEndHeader = new Label("End");
+        lblStartTime = new Label("");
+        lblEndTime = new Label("");
+        lblSeatsHeader = new Label("No. of seats");
+        lblNameHeader = new Label("Name");
+        nameInput = new TextField();
+        nrOfSeats = new ChoiceBox<>();
+        nrOfSeats.getItems().addAll(1,2,3,4,5,6,7,8,9,10);
+        nrOfSeats.setValue(0);
+    }
+
+    public void addComponentsBottom(){
+        bottomPane.add(titleHeader, 1,0); bottomPane.add(roomHeader, 2,0); bottomPane.add(movieHeader, 3,0); bottomPane.add(selectedMovieHeader, 4,0);
+        bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1); bottomPane.add(btnPurchaseTicket, 5,1);
+        bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2); bottomPane.add(btnClearPurchaseField, 5,2);
+    }
+
+    public void removeComponentsBottom(){
+        bottomPane.getChildren().removeAll(titleHeader,roomHeader, movieHeader, selectedMovieHeader,
+                lblStartHeader, lblStartTime, lblSeatsHeader, nrOfSeats, btnPurchaseTicket,
+                lblEndHeader, lblEndTime, lblNameHeader, nameInput, btnClearPurchaseField);
     }
 }
 
