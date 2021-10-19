@@ -5,7 +5,7 @@
     -fx-background-color: #9d9de5;
 }
 .label{
-
+    -fx-text-background-color: #a6a6f4;
 }
 
 .table-view .column-header-background .filler .corner{

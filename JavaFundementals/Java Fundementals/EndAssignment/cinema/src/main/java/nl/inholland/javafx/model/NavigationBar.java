@@ -1,9 +1,15 @@
 package nl.inholland.javafx.model;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.model.Person;
+import nl.inholland.javafx.ui.App;
 
 public class NavigationBar {
     private final MenuBar menuBar;
@@ -18,7 +24,7 @@ public class NavigationBar {
         logout = new Menu("Logout");
     }
 
-    public MenuBar getMenuBar(Person user){
+    public MenuBar getMenuBar(Person user, Stage window, Database db){
         MenuItem showings = new MenuItem("Manage showings");
         MenuItem movies = new MenuItem("Manage movies");
         MenuItem about = new MenuItem("About");
@@ -34,6 +40,18 @@ public class NavigationBar {
         else{
             help.setVisible(false);
         }
+
+        // Logout functionality while maintaining the same databse
+        logout1.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                try {
+                    new App().start(new Stage(), db);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                window.close();
+            }});
+
         return menuBar;
     }
 }

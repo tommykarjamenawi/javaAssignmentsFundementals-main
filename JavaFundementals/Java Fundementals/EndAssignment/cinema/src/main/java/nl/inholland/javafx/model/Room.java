@@ -6,16 +6,18 @@ import java.time.format.DateTimeFormatter;
 public class Room {
 
     public Room(LocalDateTime start, LocalDateTime end, Movie movie, int seats) {
+        this.movie = movie;
         this.start = start;
-        this.startTime = start.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+        this.startTime = start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.end = end;
-        this.endTime = end.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+        this.endTime = end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.title = movie.getTitle();
         this.seats = seats;
         this.price = movie.getPrice();
     }
 
     public Room(String startTime, String endTime, Movie movie, int seats) {
+        this.movie = movie;
         this.start = LocalDateTime.parse(startTime);
         this.startTime = startTime;
         this.end = LocalDateTime.parse(endTime);
@@ -26,6 +28,7 @@ public class Room {
     }
 
     // Room properties
+    private final Movie movie;
     private LocalDateTime start;
     private LocalDateTime end;
     private String startTime;
