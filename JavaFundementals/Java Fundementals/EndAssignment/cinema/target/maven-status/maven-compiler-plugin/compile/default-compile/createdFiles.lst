@@ -8,4 +8,5 @@ nl\inholland\javafx\model\Movie.class
 nl\inholland\javafx\model\Room.class
 nl\inholland\javafx\model\TicketOrder.class
 nl\inholland\javafx\dal\Database.class
+nl\inholland\javafx\ui\ManageShowings.class
 nl\inholland\javafx\model\NavigationBar.class

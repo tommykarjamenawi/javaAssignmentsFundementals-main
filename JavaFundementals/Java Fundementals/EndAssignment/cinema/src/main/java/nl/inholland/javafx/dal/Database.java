@@ -15,10 +15,14 @@ import java.util.*;
 public class Database {
     private final List<Person> persons;
     private final ObservableList<Movie> movies;
+    public final ObservableList<Room> room1;
+    public final ObservableList<Room> room2;
 
     public Database() {
         persons = new ArrayList<>();
         movies = FXCollections.observableArrayList();
+        room1 = FXCollections.observableArrayList();
+        room2 = FXCollections.observableArrayList();
         initialize();
     }
 
@@ -26,6 +30,7 @@ public class Database {
         readPersons();
         readMovies();
     }
+
 
 
     private void readPersons() {

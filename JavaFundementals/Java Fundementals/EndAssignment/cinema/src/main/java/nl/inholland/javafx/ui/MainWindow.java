@@ -1,8 +1,6 @@
 package nl.inholland.javafx.ui;
 
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,6 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.model.*;
+
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 public class MainWindow {
@@ -35,14 +35,17 @@ public class MainWindow {
     private ChoiceBox<Integer> nrOfSeats;
     private Label errorMessage;
     private Database dataBase;
-
-
+    private Button btnPurchaseTicket;
+    private Button btnClearPurchaseField;
 
     public MainWindow(Person user, Database db) {
         dataBase = db;
         windowStage = new Stage();
         // Set Window properties
         windowStage.setTitle("Fantastic Cinema -- -- purchase tickets -- username: " + user.getUserName());
+
+        btnPurchaseTicket = new Button("Purchase");
+        btnClearPurchaseField = new Button("Clear");
 
         // Set container
         BorderPane container = new BorderPane();
@@ -63,13 +66,13 @@ public class MainWindow {
         errorMessage = new Label("Select a movie!");
 
         // make tableviews
-        RoomTable roomTable = new RoomTable(dataBase.getMovies(), 200);
-        TableView room1 = roomTable.getTableViewRoom();
+        RoomTable roomTable = new RoomTable(dataBase.getMovies(), 200, dataBase);
+        TableView room1 = roomTable.getTableViewRoom(200);
         room1.setMinWidth(650);
         ObservableList<Movie> moviesList = dataBase.getMovies();
         Collections.reverse(moviesList); // reverse the list
-        RoomTable roomTable2 = new RoomTable(moviesList, 100);
-        TableView room2 = roomTable2.getTableViewRoom();
+        RoomTable roomTable2 = new RoomTable(moviesList, 100, dataBase);
+        TableView room2 = roomTable2.getTableViewRoom(100);
         Collections.reverse(moviesList); // reverse the list again to make the order default again
         room2.setMinWidth(650);
 
@@ -92,15 +95,15 @@ public class MainWindow {
                 lblEndTime = new Label(selectedMovie.getEndTime());
                 lblSeatsHeader = new Label("No. of seats");
                 lblNameHeader = new Label("Name");
-                nameInput = new PasswordField();
+                nameInput = new TextField();
                 nrOfSeats = new ChoiceBox<>();
                 nrOfSeats.getItems().addAll(1,2,3,4,5,6,7,8,9,10);
                 nrOfSeats.setValue(0);
 
                 // add content to bottom pane
                 bottomPane.add(titleHeader, 1,0); bottomPane.add(roomHeader, 2,0); bottomPane.add(movieHeader, 3,0); bottomPane.add(selectedMovieHeader, 4,0);
-                bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1);
-                bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2);
+                bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1); bottomPane.add(btnPurchaseTicket, 5,1);
+                bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2); bottomPane.add(btnClearPurchaseField, 5,2);
             }
         });
         room2.setOnMouseClicked((MouseEvent event) -> {
@@ -118,15 +121,15 @@ public class MainWindow {
                 lblEndTime = new Label(selectedMovie.getEndTime());
                 lblSeatsHeader = new Label("No. of seats");
                 lblNameHeader = new Label("Name");
-                nameInput = new PasswordField();
+                nameInput = new TextField();
                 nrOfSeats = new ChoiceBox<>();
                 nrOfSeats.getItems().addAll(0,1,2,3,4,5,6,7,8,9,10);
                 nrOfSeats.setValue(0);
 
                 // add content to bottom pane
                 bottomPane.add(titleHeader, 1,0); bottomPane.add(roomHeader, 2,0); bottomPane.add(movieHeader, 3,0); bottomPane.add(selectedMovieHeader, 4,0);
-                bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1);
-                bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2);
+                bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1); bottomPane.add(btnPurchaseTicket, 5,1);
+                bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2); bottomPane.add(btnClearPurchaseField, 5,2);
             }
         });
 
@@ -148,6 +151,35 @@ public class MainWindow {
         container.setTop(topVbox);
         container.setCenter(centerPane);
         container.setBottom(bottomPane);
+
+        btnPurchaseTicket.setOnMouseClicked((MouseEvent event) -> {
+            if(event.getButton().equals(MouseButton.PRIMARY)){
+                TicketOrder order = new TicketOrder(selectedMovie, nrOfSeats.getValue(), nameInput.getText(), LocalDateTime.now());
+                if (order.getRoom().getSeats() == 200){
+                    for(Room room : dataBase.room1){
+                        if (room.getTitle().equals(order.getRoom().getTitle())) {
+                            room.setSeats((room.getSeats() - nrOfSeats.getValue()));
+                        }
+                    }
+                }
+                else{
+                    for(Room room : dataBase.room2){
+                        if (room.getTitle().equals(order.getRoom().getTitle())) {
+                            room.setSeats((room.getSeats() - nrOfSeats.getValue()));
+                        }
+                    }
+                }
+                room1.refresh();
+                room2.refresh();
+            }
+        });
+        btnClearPurchaseField.setOnMouseClicked((MouseEvent event) -> {
+            if(event.getButton().equals(MouseButton.PRIMARY)){
+                bottomPane.getChildren().removeAll(titleHeader, roomHeader, movieHeader, selectedMovieHeader,
+                        lblStartHeader, lblStartTime, lblSeatsHeader, nrOfSeats, btnPurchaseTicket,
+                        lblEndHeader, lblEndTime, lblNameHeader, nameInput, btnClearPurchaseField);
+            }
+        });
 
         Scene scene = new Scene(container);
         scene.getStylesheets().add("style.css"); // apply css styling

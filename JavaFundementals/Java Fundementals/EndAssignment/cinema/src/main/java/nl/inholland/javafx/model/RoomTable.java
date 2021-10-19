@@ -5,27 +5,40 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import nl.inholland.javafx.dal.Database;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class RoomTable {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
     private TableView tableview;
-    private ObservableList<Room> room;
+    private Database dataBase;
+    //public ObservableList<Room> room;
 
-    public RoomTable(ObservableList<Movie> movies, int seats){
+    public RoomTable(ObservableList<Movie> movies, int seats, Database db){
+        dataBase = db;
         tableview = new TableView();
-        room = FXCollections.observableArrayList();
+        //room = FXCollections.observableArrayList();
         int increaseTime = 15;
-        for (Movie movie : movies){ // loop through list of movies
-            LocalDateTime startTime = LocalDateTime.now().plusMinutes(increaseTime);
-            LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
-            room.add(new Room(startTime, endTime, movie,seats)); // add movie to a room
-            increaseTime += (movie.getDuration() + 15); // increase time to make the times not overlap each other
+        if(dataBase.room1.size() <= 0 || dataBase.room2.size() <= 0) {
+            for (Movie movie : movies) { // loop through list of movies
+                LocalDateTime startTime = LocalDateTime.now().plusMinutes(increaseTime);
+                LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
+                //room.add(new Room(startTime, endTime, movie,seats)); // add movie to a room
+                if (seats == 200) {
+                    dataBase.room1.add(new Room(startTime, endTime, movie, seats)); // add movie to a room
+                }
+                else{
+                    dataBase.room2.add(new Room(startTime, endTime, movie, seats)); // add movie to a room
+                }
+                increaseTime += (movie.getDuration() + 15); // increase time to make the times not overlap each other
+            }
+
         }
     }
 
-    public TableView getTableViewRoom(){
+    public TableView getTableViewRoom(int seats){
         TableColumn<Room, String> startColumn = new TableColumn<Room, String>("Start");
         startColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         TableColumn<Room, String> endColumn = new TableColumn<>("End");
@@ -39,7 +52,12 @@ public class RoomTable {
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         tableview.getColumns().addAll(startColumn, endColumn, titleColumn, seatsColumn, priceColumn);
-        tableview.setItems(room);
+        if (seats == 200){
+            tableview.setItems(dataBase.room1);
+        }
+        else{
+            tableview.setItems(dataBase.room2);
+        }
         return tableview;
     }
 }

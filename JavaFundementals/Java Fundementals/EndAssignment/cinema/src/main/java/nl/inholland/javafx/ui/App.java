@@ -21,7 +21,7 @@ public class App extends Application {
     // startup method
     @Override
     public void start(Stage stage) throws Exception {
-        if (db == null){db = createDatabase(); }
+        if (db == null){db = getDatabase();}
         fillLoginScreen(stage);
     }
 
@@ -34,7 +34,7 @@ public class App extends Application {
     public Database db;
     public Stage screen;
 
-    public Database createDatabase(){
+    public Database getDatabase(){
         return new Database();
     }
 
