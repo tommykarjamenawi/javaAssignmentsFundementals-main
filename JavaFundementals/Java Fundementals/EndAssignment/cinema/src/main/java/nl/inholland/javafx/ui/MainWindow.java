@@ -11,6 +11,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.model.*;
 
@@ -50,15 +53,17 @@ public class MainWindow {
 
         // Set container
         BorderPane container = new BorderPane();
+
         // Set wrapper
         VBox topVbox = new VBox(10);
         bottomPane = new GridPane();
         bottomPane.setVisible(false);
+
         // call class NavigationBar top get the correct menuBar
         NavigationBar navigationBar = new NavigationBar();
         MenuBar menuBar = navigationBar.getMenuBar(user, windowStage, dataBase);
 
-        // Add label
+        // Add labels
         Label purchaseLabel = new Label("Purchase Tickets");
         purchaseLabel.setId("tester");
         Label room1Label = new Label("room 1");
@@ -117,13 +122,9 @@ public class MainWindow {
 
         // Add tableView to the gridPane that will be located at the center
         GridPane centerPane = new GridPane();
-        centerPane.add(room1Label, 1, 1);
-        centerPane.add(room2Label, 2, 1);
-        centerPane.add(room1, 1, 2);
-        centerPane.add(room2, 2, 2);
+        centerPane.add(room1Label, 1, 1); centerPane.add(room2Label, 2, 1); centerPane.add(room1, 1, 2); centerPane.add(room2, 2, 2);
         bottomPane.add(errorMessage, 1, 3);
-        centerPane.setHgap(10);centerPane.setVgap(3);
-        bottomPane.setHgap(50);bottomPane.setVgap(10);
+        centerPane.setHgap(10);centerPane.setVgap(3); bottomPane.setHgap(50);bottomPane.setVgap(10);
 
         // make a border and set background around the panes
         centerPane.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.SOLID, null , null)));
@@ -134,6 +135,7 @@ public class MainWindow {
         container.setCenter(centerPane);
         container.setBottom(bottomPane);
 
+        // deduct amount of seats from the tableviews List
         btnPurchaseTicket.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 if (!nameInput.getText().isEmpty()){
@@ -141,12 +143,12 @@ public class MainWindow {
                     if (roomHeader.getText().equals("Room 1")){
                         for(Room room : dataBase.room1){
                             if (room.getTitle().equals(order.getRoom().getTitle())) {
-                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){
+                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){ // if the purchase amount results in seats < 0
                                     errorMessage.setText("Not enough tickets available!");
                                 }
                                 else {
-                                    room.setSeats((room.getSeats() - nrOfSeats.getValue()));
-                                    room1.refresh();
+                                    room.setSeats((room.getSeats() - nrOfSeats.getValue())); // deduct nrOfSeats from the list in the DataBase object
+                                    room1.refresh();// refresh the tableView
                                 }
                             }
                         }
@@ -158,8 +160,8 @@ public class MainWindow {
                                     errorMessage.setText("Not enough tickets available!");
                                 }
                                 else{
-                                    room.setSeats((room.getSeats() - nrOfSeats.getValue()));
-                                    room2.refresh();
+                                    room.setSeats((room.getSeats() - nrOfSeats.getValue())); // deduct nrOfSeats from the list in the DataBase object
+                                    room2.refresh(); // refresh the tableView
                                 }
                             }
                         }
@@ -176,6 +178,8 @@ public class MainWindow {
 
             }
         });
+
+        //Clear the purchase field upon click of the button
         btnClearPurchaseField.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 removeComponentsBottom();
@@ -184,13 +188,19 @@ public class MainWindow {
         });
 
         Scene scene = new Scene(container);
-        scene.getStylesheets().add("style.css"); // apply css styling
+
+        // Jmetro for styling
+        JMetro jMetro = new JMetro(Style.DARK);
+        container.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        jMetro.setScene(scene);
+        //scene.getStylesheets().add("style.css"); // apply css styling
         windowStage.setScene(scene);
 
         // Show window
         windowStage.show();
     }
 
+    // Default purchase field values
     public void setDefaultPurchaseInfo(){
         titleHeader = new Label("Room");
         roomHeader = new Label("");
@@ -208,12 +218,14 @@ public class MainWindow {
         nrOfSeats.setValue(0);
     }
 
+    // add components to the GridPane
     public void addComponentsBottom(){
         bottomPane.add(titleHeader, 1,0); bottomPane.add(roomHeader, 2,0); bottomPane.add(movieHeader, 3,0); bottomPane.add(selectedMovieHeader, 4,0);
         bottomPane.add(lblStartHeader, 1,1); bottomPane.add(lblStartTime, 2,1); bottomPane.add(lblSeatsHeader, 3,1); bottomPane.add(nrOfSeats, 4,1); bottomPane.add(btnPurchaseTicket, 5,1);
         bottomPane.add(lblEndHeader, 1,2); bottomPane.add(lblEndTime, 2,2); bottomPane.add(lblNameHeader, 3,2); bottomPane.add(nameInput, 4,2); bottomPane.add(btnClearPurchaseField, 5,2);
     }
 
+    // remove components from the GridPane
     public void removeComponentsBottom(){
         bottomPane.getChildren().removeAll(titleHeader,roomHeader, movieHeader, selectedMovieHeader,
                 lblStartHeader, lblStartTime, lblSeatsHeader, nrOfSeats, btnPurchaseTicket,

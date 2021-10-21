@@ -10,6 +10,8 @@ import javafx.stage.Window;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.model.Person;
 import nl.inholland.javafx.ui.App;
+import nl.inholland.javafx.ui.ManageMovies;
+import nl.inholland.javafx.ui.ManageShowings;
 
 public class NavigationBar {
     private final MenuBar menuBar;
@@ -38,7 +40,7 @@ public class NavigationBar {
             admin.setVisible(false);
         }
         else{
-            help.setVisible(false);
+            //help.setVisible(false);
         }
 
         // Logout functionality while maintaining the same databse
@@ -46,6 +48,28 @@ public class NavigationBar {
             public void handle(ActionEvent event) {
                 try {
                     new App().start(new Stage(), db);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                window.close();
+            }});
+
+        // open manage showings form
+        showings.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                try {
+                    new ManageShowings(user, db);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                window.close();
+            }});
+
+        // open manage movies form
+        movies.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                try {
+                    new ManageMovies(user, db);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

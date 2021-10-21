@@ -14,7 +14,6 @@ public class RoomTable {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
     private TableView tableview;
     private Database dataBase;
-    //public ObservableList<Room> room;
 
     public RoomTable(ObservableList<Movie> movies, int seats, Database db){
         dataBase = db;

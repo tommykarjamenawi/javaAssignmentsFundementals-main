@@ -26,6 +26,7 @@ public class Room {
         this.seats = seats;
         this.price = movie.getPrice();
     }
+
     public Room(){
 
     }
