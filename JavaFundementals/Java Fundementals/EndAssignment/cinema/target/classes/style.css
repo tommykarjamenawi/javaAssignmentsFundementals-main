@@ -1,4 +1,4 @@
-.root{
+/*.root{
     -fx-font-family: "Arial Black";
     -fx-font-size: 11pt;
     -fx-text-background-color: #1a1a28;
@@ -32,4 +32,7 @@
 }
 #room1Label, #room2Label{
     -fx-text-background-color: #4040D8FF;
+}*/
+#errorMessage{
+    -fx-text-background-color: #ff0000;
 }

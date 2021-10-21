@@ -13,10 +13,6 @@ import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.model.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class ManageMovies {
     private Database dataBase;
     private GridPane topPane;
@@ -44,6 +40,7 @@ public class ManageMovies {
         Stage window = new Stage();
         window.setTitle("Fantastic Cinema -- -- manage movies -- username: " + user.getUserName());
         lblErrorMessage = new Label("");
+        lblErrorMessage.setId("errorMessage");
 
         // Make container
         BorderPane container = new BorderPane();
@@ -56,7 +53,7 @@ public class ManageMovies {
         addingPane = new GridPane();;
         addingPane.setHgap(40);
         addingPane.setVgap(10);
-        errorHBox = new HBox(10);
+        errorHBox = new HBox();
         addingPane.setVisible(false);
 
         errorHBox.getChildren().add(lblErrorMessage);
@@ -81,7 +78,8 @@ public class ManageMovies {
         centerPane.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.SOLID, null , null)));
         centerPane.add(lblRoom1, 1, 0); centerPane.add(movieTableView, 1, 1);
 
-        setDefaultAddingInfo(); addComponentsAddingField();
+        setDefaultAddingInfo();
+        addComponentsAddingField();
         bottomPane.add(addingPane, 1, 0);
         bottomPane.add(errorHBox, 1, 1);
 
@@ -100,6 +98,7 @@ public class ManageMovies {
                     int duration = Integer.parseInt(txtMovieDuration.getText());
                     double price = Double.parseDouble(txtMoviePrice.getText());
                     dataBase.getMovies().add(new Movie(txtMovieTitle.getText(), duration, price));
+                    lblErrorMessage.setText("");
                     movieTableView.refresh();
                 }
                 else{
@@ -124,10 +123,10 @@ public class ManageMovies {
 
         Scene scene = new Scene(container);
         // Jmetro for styling
+        //scene.getStylesheets().add("style.css"); // apply css styling
         JMetro jMetro = new JMetro(Style.DARK);
         container.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         jMetro.setScene(scene);
-        //scene.getStylesheets().add("style.css"); // apply css styling
         window.setScene(scene);
 
         // Show window
@@ -136,7 +135,7 @@ public class ManageMovies {
 
     // Default Add Showings field values
     public void setDefaultAddingInfo(){
-        lblErrorMessage = new Label("");
+        lblErrorMessage.setText("");
         lblMovieHeader = new Label("Movie title:");
         txtMovieTitle = new TextField();
         txtMovieTitle.setPromptText("Movie Title");
