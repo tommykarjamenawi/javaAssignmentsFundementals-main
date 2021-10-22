@@ -33,6 +33,3 @@
 #room1Label, #room2Label{
     -fx-text-background-color: #4040D8FF;
 }*/
-#errorMessage{
-    -fx-text-background-color: #ff0000;
-}

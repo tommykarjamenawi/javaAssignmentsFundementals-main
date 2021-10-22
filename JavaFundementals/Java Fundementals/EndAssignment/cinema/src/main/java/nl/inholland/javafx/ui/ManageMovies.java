@@ -15,21 +15,19 @@ import nl.inholland.javafx.model.*;
 
 public class ManageMovies {
     private Database dataBase;
+    // Layout of the form
     private GridPane topPane;
     private GridPane centerPane;
     private GridPane bottomPane;
     private GridPane addingPane;
     private HBox errorHBox;
-
+    // BottomPane content
     private Label lblErrorMessage;
-
     private Label lblMovieHeader;
     private TextField txtMovieTitle;
-
     private Label lblDurationHeader;
     private TextField txtMovieDuration;
     private Button btnAddMovie;
-
     private Label lblPriceHeader;
     private TextField txtMoviePrice;
     private Button btnClearField;
@@ -40,23 +38,10 @@ public class ManageMovies {
         Stage window = new Stage();
         window.setTitle("Fantastic Cinema -- -- manage movies -- username: " + user.getUserName());
         lblErrorMessage = new Label("");
-        lblErrorMessage.setId("errorMessage");
 
         // Make container
         BorderPane container = new BorderPane();
-        // Make wrappers to put inside the container
-        topPane = new GridPane();
-        centerPane = new GridPane();
-        centerPane.setHgap(10);
-        centerPane.setVgap(5);
-        bottomPane = new GridPane();
-        addingPane = new GridPane();;
-        addingPane.setHgap(40);
-        addingPane.setVgap(10);
-        errorHBox = new HBox();
-        addingPane.setVisible(false);
-
-        errorHBox.getChildren().add(lblErrorMessage);
+        initializeContent(); // initialize the Layout
 
         // call class NavigationBar top get the correct menuBar
         NavigationBar navigationBar = new NavigationBar();
@@ -133,6 +118,22 @@ public class ManageMovies {
         window.show();
     }
 
+    // Will initialize the layout of the form
+    public void initializeContent(){
+        // Make wrappers to put inside the container
+        topPane = new GridPane();
+        centerPane = new GridPane();
+        centerPane.setHgap(10);
+        centerPane.setVgap(5);
+        bottomPane = new GridPane();
+        addingPane = new GridPane();;
+        addingPane.setHgap(40);
+        addingPane.setVgap(10);
+        errorHBox = new HBox();
+        addingPane.setVisible(false); // Disable add Movie field on startup
+        errorHBox.getChildren().add(lblErrorMessage);
+    }
+
     // Default Add Showings field values
     public void setDefaultAddingInfo(){
         lblErrorMessage.setText("");
@@ -145,7 +146,7 @@ public class ManageMovies {
         txtMovieDuration.setPromptText("Movie Duration");
         btnAddMovie = new Button("Add movie");
 
-        lblPriceHeader = new Label("Duration:");
+        lblPriceHeader = new Label("Price:");
         txtMoviePrice = new TextField();
         txtMoviePrice.setPromptText("Movie Price");
         btnClearField = new Button("Clear");

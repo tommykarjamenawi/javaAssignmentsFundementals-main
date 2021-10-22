@@ -60,17 +60,7 @@ public class ManageShowings {
 
         // Make container
         BorderPane container = new BorderPane();
-        // Make wrappers to put inside the container
-        topPane = new GridPane();
-        centerPane = new GridPane();
-        centerPane.setHgap(10);
-        centerPane.setVgap(5);
-        bottomPane = new GridPane();
-        addingPane = new GridPane();
-        addingPane.setVisible(false);
-        addingPane.setHgap(40);
-        addingPane.setVgap(10);
-        errorHBox = new HBox(10);
+        initializeContent(); // initialize the Layout
         setDefaultPurchaseInfo(); // initialize the adding field
 
         errorHBox.getChildren().add(lblErrorMessage);
@@ -87,7 +77,7 @@ public class ManageShowings {
         Label lblRoom1 = new Label("Room 1");
         Label lblRoom2 = new Label("Room 2");
 
-        // make tableviews
+        // make tableview for room 1 and room 2
         RoomTable roomTable = new RoomTable(dataBase.getMovies(), 200, dataBase);
         TableView room1 = roomTable.getTableViewRoom(200);
         room1.setMinWidth(650);
@@ -103,35 +93,35 @@ public class ManageShowings {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 selectedMovie = (Room)room1.getSelectionModel().getSelectedItem();
                 int index = room1.getSelectionModel().getSelectedIndex();
-                cbMovie.getItems().clear();
+                cbMovie.getItems().clear(); // remove the content of the comboBox
                 for (Movie movie : dataBase.getMovies()){
                     cbMovie.getItems().add(movie);
                 }
-                cbMovie.getSelectionModel().select(index);
+                cbMovie.getSelectionModel().select(index); // default selection
                 text = "Room 1";
                 cbRoom.setValue(text);
                 lblNoOfSeats.setText("200");
-                addingPane.setVisible(true);
-                addComponentsAddingField();
+                addingPane.setVisible(true); // make adding field visible
+                addComponentsAddingField(); // add content to the GridPane
             }
         });
         room2.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 selectedMovie = (Room)room2.getSelectionModel().getSelectedItem();
                 int index = room2.getSelectionModel().getSelectedIndex();
-                cbMovie.getItems().clear();
+                cbMovie.getItems().clear(); // remove the content of the comboBox
                 ObservableList<Movie> tempList = dataBase.getMovies();
-                Collections.reverse(tempList);
+                Collections.reverse(tempList); // reverse the list of movies to match the click events
                 for (Movie movie : tempList){
                     cbMovie.getItems().add(movie);
                 }
-                cbMovie.getSelectionModel().select(index);
-                Collections.reverse(tempList);
+                cbMovie.getSelectionModel().select(index); // default selection
+                Collections.reverse(tempList); // reverse the reversed list to set is as normal
                 text = "Room 2";
                 cbRoom.setValue(text);
                 lblNoOfSeats.setText("100");
-                addingPane.setVisible(true);
-                addComponentsAddingField();
+                addingPane.setVisible(true); // make adding field visible
+                addComponentsAddingField(); // add content to the GridPane
             }
         });
         addComponentsAddingField();
@@ -168,7 +158,7 @@ public class ManageShowings {
             }
         });
 
-        //add listener to comboBox
+        //add listener to comboBox(display price based on selected movie)
         cbMovie.valueProperty().addListener(new ChangeListener<Movie>() {
             @Override
             public void changed(ObservableValue<? extends Movie> observableValue, Movie before, Movie after) {
@@ -199,41 +189,48 @@ public class ManageShowings {
                 }
                 else{
                     selectedcbMovie = cbMovie.getValue();
+                    // String to LocalDateTRime conversion.
                     String startTime = (datePicker.getValue().toString() + "T" + hourPicker.getText());
                     LocalDateTime dateTime1 = LocalDateTime.parse(startTime);
                     String temp1 = dateTime1.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-
                     String endTime = (datePicker.getValue().toString() + "T" + hourPicker.getText());
                     LocalDateTime dateTime2 = dateTime1.plusMinutes(selectedcbMovie.getDuration());
-                    //LocalDateTime dateTime2 = LocalDateTime.parse(endTime);
                     String temp2 = dateTime2.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
-                    int seats = Integer.parseInt(lblNoOfSeats.getText());
-                    Room tempRoom = new Room(dateTime1, dateTime2, selectedcbMovie, seats);
+                    Room tempRoom = new Room(dateTime1, dateTime2, selectedcbMovie, Integer.parseInt(lblNoOfSeats.getText()));
+                    // check if inserted time overlaps other movie times in the designated room.
                     if(lblNoOfSeats.getText().equals("200")){
+                        int count = 1;
                         for(Room room : dataBase.room1){
                             Duration diff1 = Duration.between(room.getStart(), dateTime1);
                             Duration diff2 = Duration.between(room.getEnd(), dateTime2);
-                            if (diff1.toMinutes() > 15 || diff2.toMinutes() > 15){
+                            Duration diff3 = Duration.between(room.getStart(), dateTime2);
+                            Duration diff4 = Duration.between(room.getEnd(), dateTime1);
+                            if (count == dataBase.room1.size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
                                 dataBase.room1.add(tempRoom);
                                 room1.refresh();
                             }
-                            else{
+                            if (!(diff1.toMinutes() >= 15) || !(diff2.toMinutes() >= 15) || !(diff3.toMinutes() >= 15) || !(diff4.toMinutes() >= 15)){
                                 lblErrorMessage.setText("Showing cannot overlap in room 1!");
                             }
+                            count++;
                         }
                     }
                     else{
+                        int count = 1;
                         for(Room room : dataBase.room2){
                             Duration diff1 = Duration.between(room.getStart(), dateTime1);
                             Duration diff2 = Duration.between(room.getEnd(), dateTime2);
-                            if (diff1.toMinutes() > 15 || diff2.toMinutes() > 15){
+                            Duration diff3 = Duration.between(room.getStart(), dateTime2);
+                            Duration diff4 = Duration.between(room.getEnd(), dateTime1);
+                            if (count == dataBase.room2.size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
                                 dataBase.room2.add(tempRoom);
                                 room2.refresh();
                             }
-                            else{
+                            if (!(diff1.toMinutes() >= 15) || !(diff2.toMinutes() >= 15) || !(diff3.toMinutes() >= 15) || !(diff4.toMinutes() >= 15)){
                                 lblErrorMessage.setText("Showing cannot overlap in room 2!");
                             }
+                            count++;
                         }
                     }
                 }
@@ -260,6 +257,21 @@ public class ManageShowings {
 
         // Show window
         window.show();
+    }
+
+    // Will initialize the layout of the form
+    public void initializeContent(){
+        // Make wrappers to put inside the container
+        topPane = new GridPane();
+        centerPane = new GridPane();
+        centerPane.setHgap(10);
+        centerPane.setVgap(5);
+        bottomPane = new GridPane();
+        addingPane = new GridPane();
+        addingPane.setVisible(false); // adding field is not visible at startup
+        addingPane.setHgap(40);
+        addingPane.setVgap(10);
+        errorHBox = new HBox(10);
     }
 
     // Default Add Showings field values

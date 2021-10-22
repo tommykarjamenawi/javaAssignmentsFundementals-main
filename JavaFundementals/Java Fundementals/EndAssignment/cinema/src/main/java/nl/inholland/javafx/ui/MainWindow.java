@@ -156,7 +156,7 @@ public class MainWindow {
                     else{
                         for(Room room : dataBase.room2){
                             if (room.getTitle().equals(order.getRoom().getTitle())) {
-                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){
+                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){ // determines if there are enough tickets available
                                     errorMessage.setText("Not enough tickets available!");
                                 }
                                 else{

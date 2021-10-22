@@ -73,7 +73,7 @@ public class App extends Application {
                     new MainWindow(user, db);
                     window.close();
                 } else {
-                    new Alert(Alert.AlertType.WARNING, "Bad Credentials! Try again.").show();
+                    new Alert(Alert.AlertType.WARNING, "Bad Credentials!").show();
                     userInput.clear();
                     passwordInput.clear();
                 }
