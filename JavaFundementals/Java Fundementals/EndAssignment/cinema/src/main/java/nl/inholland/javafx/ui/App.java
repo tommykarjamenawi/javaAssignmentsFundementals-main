@@ -10,7 +10,7 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
-import nl.inholland.javafx.logic.PersonService;
+import nl.inholland.javafx.logic.PersonLogic;
 import nl.inholland.javafx.model.Person;
 
 public class App extends Application {
@@ -41,7 +41,7 @@ public class App extends Application {
     // Fill the scene
     public void fillLoginScreen(Stage window){
         screen = window;
-        PersonService personService = new PersonService();
+        PersonLogic personLogic = new PersonLogic();
         // Set Window properties
         window.setHeight(200);
         window.setWidth(300);
@@ -68,7 +68,7 @@ public class App extends Application {
         // Login button click event
         loginButton.setOnAction(actionEvent -> {
             if (!userInput.getText().isEmpty() && !passwordInput.getText().isEmpty()) {
-                Person user = personService.validateUser(userInput.getText(), passwordInput.getText());
+                Person user = personLogic.validateUser(userInput.getText(), passwordInput.getText());
                 if (user != null) {
                     new MainWindow(user, db);
                     window.close();

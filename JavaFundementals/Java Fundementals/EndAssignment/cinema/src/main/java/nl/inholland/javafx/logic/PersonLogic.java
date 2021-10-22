@@ -6,7 +6,7 @@ import nl.inholland.javafx.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonService {
+public class PersonLogic {
     private final Database db = new Database();
 
     public Person validateUser(String username, String password) {

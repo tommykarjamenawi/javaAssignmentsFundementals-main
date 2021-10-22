@@ -15,12 +15,16 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
+import nl.inholland.javafx.logic.MovieLogic;
+import nl.inholland.javafx.logic.RoomLogic;
 import nl.inholland.javafx.model.*;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
 public class MainWindow {
     private final Stage windowStage;
+    private MovieLogic movieLogic;
+    private RoomLogic roomLogic;
     private String text;
     private Room selectedMovie;
     private Label titleHeader;
@@ -43,6 +47,8 @@ public class MainWindow {
 
     public MainWindow(Person user, Database db) {
         dataBase = db;
+        movieLogic = new MovieLogic(dataBase);
+        roomLogic = new RoomLogic(dataBase);
         windowStage = new Stage();
         // Set Window properties
         windowStage.setTitle("Fantastic Cinema -- -- purchase tickets -- username: " + user.getUserName());
@@ -72,10 +78,10 @@ public class MainWindow {
         errorMessage = new Label("");
 
         // make tableviews
-        RoomTable roomTable = new RoomTable(dataBase.getMovies(), 200, dataBase);
+        RoomTable roomTable = new RoomTable(movieLogic.getMovies(), 200, dataBase);
         TableView room1 = roomTable.getTableViewRoom(200);
         room1.setMinWidth(650);
-        ObservableList<Movie> moviesList = dataBase.getMovies();
+        ObservableList<Movie> moviesList = movieLogic.getMovies();
         Collections.reverse(moviesList); // reverse the list
         RoomTable roomTable2 = new RoomTable(moviesList, 100, dataBase);
         TableView room2 = roomTable2.getTableViewRoom(100);
@@ -140,7 +146,7 @@ public class MainWindow {
                 if (!nameInput.getText().isEmpty()){
                     TicketOrder order = new TicketOrder(selectedMovie, nrOfSeats.getValue(), nameInput.getText(), LocalDateTime.now());
                     if (roomHeader.getText().equals("Room 1")){
-                        for(Room room : dataBase.room1){
+                        for(Room room : roomLogic.getLogicRoom1()){
                             if (room.getTitle().equals(order.getRoom().getTitle())) {
                                 if ((room.getSeats() - nrOfSeats.getValue()) < 0){ // if the purchase amount results in seats < 0
                                     errorMessage.setText("Not enough tickets available!");
@@ -153,7 +159,7 @@ public class MainWindow {
                         }
                     }
                     else{
-                        for(Room room : dataBase.room2){
+                        for(Room room : roomLogic.getLogicRoom2()){
                             if (room.getTitle().equals(order.getRoom().getTitle())) {
                                 if ((room.getSeats() - nrOfSeats.getValue()) < 0){ // determines if there are enough tickets available
                                     errorMessage.setText("Not enough tickets available!");

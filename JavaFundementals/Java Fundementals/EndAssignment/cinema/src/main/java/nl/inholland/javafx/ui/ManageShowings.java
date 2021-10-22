@@ -14,6 +14,8 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
+import nl.inholland.javafx.logic.MovieLogic;
+import nl.inholland.javafx.logic.RoomLogic;
 import nl.inholland.javafx.model.*;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -23,6 +25,9 @@ import java.util.Collections;
 
 public class ManageShowings {
     private Database dataBase;
+    private MovieLogic movieLogic;
+    private RoomLogic roomLogic;
+
     private GridPane topPane;
     private GridPane centerPane;
     private GridPane bottomPane;
@@ -54,6 +59,8 @@ public class ManageShowings {
 
     public ManageShowings(Person user, Database db){
         dataBase = db;
+        movieLogic = new MovieLogic(dataBase);
+        roomLogic = new RoomLogic(dataBase);
         Stage window = new Stage();
         window.setTitle("Fantastic Cinema -- -- manage showings -- username: " + user.getUserName());
         lblErrorMessage = new Label("");
@@ -69,7 +76,6 @@ public class ManageShowings {
         MenuBar menuBar = navigationBar.getMenuBar(user, window, dataBase);
         Label lblManageShowings = new Label("Manage showings");
 
-
         topPane.add(menuBar, 1, 0);
         topPane.add(lblManageShowings, 1, 1);
 
@@ -78,10 +84,10 @@ public class ManageShowings {
         Label lblRoom2 = new Label("Room 2");
 
         // make tableview for room 1 and room 2
-        RoomTable roomTable = new RoomTable(dataBase.getMovies(), 200, dataBase);
+        RoomTable roomTable = new RoomTable(movieLogic.getMovies(), 200, dataBase);
         TableView room1 = roomTable.getTableViewRoom(200);
         room1.setMinWidth(650);
-        ObservableList<Movie> moviesList = dataBase.getMovies();
+        ObservableList<Movie> moviesList = movieLogic.getMovies();
         Collections.reverse(moviesList); // reverse the list
         RoomTable roomTable2 = new RoomTable(moviesList, 100, dataBase);
         TableView room2 = roomTable2.getTableViewRoom(100);
@@ -94,7 +100,7 @@ public class ManageShowings {
                 selectedMovie = (Room)room1.getSelectionModel().getSelectedItem();
                 int index = room1.getSelectionModel().getSelectedIndex();
                 cbMovie.getItems().clear(); // remove the content of the comboBox
-                for (Movie movie : dataBase.getMovies()){
+                for (Movie movie : movieLogic.getMovies()){
                     cbMovie.getItems().add(movie);
                 }
                 cbMovie.getSelectionModel().select(index); // default selection
@@ -105,12 +111,13 @@ public class ManageShowings {
                 addComponentsAddingField(); // add content to the GridPane
             }
         });
+
         room2.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 selectedMovie = (Room)room2.getSelectionModel().getSelectedItem();
                 int index = room2.getSelectionModel().getSelectedIndex();
                 cbMovie.getItems().clear(); // remove the content of the comboBox
-                ObservableList<Movie> tempList = dataBase.getMovies();
+                ObservableList<Movie> tempList = movieLogic.getMovies();
                 Collections.reverse(tempList); // reverse the list of movies to match the click events
                 for (Movie movie : tempList){
                     cbMovie.getItems().add(movie);
@@ -183,7 +190,6 @@ public class ManageShowings {
         // Add show to a room in the tableview
         btnAddShowing.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                // To  do.......
                 if (cbMovie.getValue() == null || cbRoom.getValue().isEmpty() || datePicker.getEditor().getText().isEmpty() || hourPicker.getText().isEmpty()){
                     lblErrorMessage.setText("Please fill all fields!");
                 }
@@ -201,13 +207,13 @@ public class ManageShowings {
                     // check if inserted time overlaps other movie times in the designated room.
                     if(lblNoOfSeats.getText().equals("200")){
                         int count = 1;
-                        for(Room room : dataBase.room1){
+                        for(Room room : roomLogic.getLogicRoom1()){
                             Duration diff1 = Duration.between(room.getStart(), dateTime1);
                             Duration diff2 = Duration.between(room.getEnd(), dateTime2);
                             Duration diff3 = Duration.between(room.getStart(), dateTime2);
                             Duration diff4 = Duration.between(room.getEnd(), dateTime1);
-                            if (count == dataBase.room1.size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
-                                dataBase.room1.add(tempRoom);
+                            if (count == roomLogic.getLogicRoom1().size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
+                                roomLogic.addLogicRoom1(tempRoom);
                                 room1.refresh();
                             }
                             if (!(diff1.toMinutes() >= 15) || !(diff2.toMinutes() >= 15) || !(diff3.toMinutes() >= 15) || !(diff4.toMinutes() >= 15)){
@@ -218,13 +224,13 @@ public class ManageShowings {
                     }
                     else{
                         int count = 1;
-                        for(Room room : dataBase.room2){
+                        for(Room room : roomLogic.getLogicRoom2()){
                             Duration diff1 = Duration.between(room.getStart(), dateTime1);
                             Duration diff2 = Duration.between(room.getEnd(), dateTime2);
                             Duration diff3 = Duration.between(room.getStart(), dateTime2);
                             Duration diff4 = Duration.between(room.getEnd(), dateTime1);
-                            if (count == dataBase.room2.size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
-                                dataBase.room2.add(tempRoom);
+                            if (count == roomLogic.getLogicRoom2().size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
+                                roomLogic.addLogicRoom2(tempRoom);
                                 room2.refresh();
                             }
                             if (!(diff1.toMinutes() >= 15) || !(diff2.toMinutes() >= 15) || !(diff3.toMinutes() >= 15) || !(diff4.toMinutes() >= 15)){

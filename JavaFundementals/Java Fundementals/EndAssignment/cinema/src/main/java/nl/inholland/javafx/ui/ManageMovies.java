@@ -11,10 +11,12 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
+import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.model.*;
 
 public class ManageMovies {
     private Database dataBase;
+    private MovieLogic movieLogic;
     // Layout of the form
     private GridPane topPane;
     private GridPane centerPane;
@@ -35,6 +37,7 @@ public class ManageMovies {
 
     public ManageMovies(Person user, Database db){
         dataBase = db;
+        movieLogic = new MovieLogic(dataBase);
         Stage window = new Stage();
         window.setTitle("Fantastic Cinema -- -- manage movies -- username: " + user.getUserName());
         lblErrorMessage = new Label("");
@@ -76,13 +79,13 @@ public class ManageMovies {
             }
         });
 
-        // Add show to a room in the tableview
+        // Add movie in the tableview/database
         btnAddMovie.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
                 if (!txtMovieTitle.getText().isEmpty() && !txtMovieDuration.getText().isEmpty() && !txtMoviePrice.getText().isEmpty()){
                     int duration = Integer.parseInt(txtMovieDuration.getText());
                     double price = Double.parseDouble(txtMoviePrice.getText());
-                    dataBase.getMovies().add(new Movie(txtMovieTitle.getText(), duration, price));
+                    movieLogic.addMovie(new Movie(txtMovieTitle.getText(), duration, price));
                     lblErrorMessage.setText("");
                     movieTableView.refresh();
                 }

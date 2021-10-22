@@ -11,10 +11,11 @@ import java.util.*;
 public class Database {
     private final List<Person> persons;
     private final ObservableList<Movie> movies;
-    public final ObservableList<Room> room1;
-    public final ObservableList<Room> room2;
+    private final ObservableList<Room> room1;
+    private final ObservableList<Room> room2;
 
     public Database() {
+        // initialize the lists
         persons = new ArrayList<>();
         movies = FXCollections.observableArrayList();
         room1 = FXCollections.observableArrayList();
@@ -85,9 +86,19 @@ public class Database {
 
     public ObservableList<Movie> getMovies() {
         return movies;
-    }
+    } // get list of Movies
 
-    /*public boolean saveMovies(List<Movie> persons) {
+    public void addMovie(Movie movie){ movies.add(movie); } // add movie to the list
+
+    public ObservableList<Room> getRoom1() { return room1; } // get room1
+
+    public ObservableList<Room> getRoom2() { return room2; } // get room2
+
+    public void addRoom1(Room room){ room1.add(room); }
+
+    public void addRoom2(Room room){ room2.add(room); }
+
+/*public boolean saveMovies(List<Movie> persons) {
         try (Writer writer = new FileWriter("src/main/java/nl/inholland/javafx/files/movies.csv")) {
             for (Movie movie : persons) {
                 String movieString = String.format("%s,%s,%s,%s,%s\n",
