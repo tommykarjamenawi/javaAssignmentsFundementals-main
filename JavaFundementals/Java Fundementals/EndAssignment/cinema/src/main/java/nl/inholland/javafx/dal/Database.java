@@ -1,14 +1,10 @@
 package nl.inholland.javafx.dal;
 
-
-import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import nl.inholland.javafx.model.*;
 import java.io.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -30,8 +26,6 @@ public class Database {
         readPersons();
         readMovies();
     }
-
-
 
     private void readPersons() {
         try (Scanner teacherScanner = new Scanner(new File("src/main/java/nl/inholland/javafx/files/persons.csv"))) {

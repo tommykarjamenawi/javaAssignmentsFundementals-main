@@ -16,7 +16,6 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.model.*;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 

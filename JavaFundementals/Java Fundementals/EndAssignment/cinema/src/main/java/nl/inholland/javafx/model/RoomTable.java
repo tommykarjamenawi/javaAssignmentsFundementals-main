@@ -1,6 +1,5 @@
 package nl.inholland.javafx.model;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -18,7 +17,6 @@ public class RoomTable {
     public RoomTable(ObservableList<Movie> movies, int seats, Database db){
         dataBase = db;
         tableview = new TableView();
-        //room = FXCollections.observableArrayList();
         int increaseTime = 15;
         if(dataBase.room1.size() <= 0 || dataBase.room2.size() <= 0) {
             for (Movie movie : movies) { // loop through list of movies
