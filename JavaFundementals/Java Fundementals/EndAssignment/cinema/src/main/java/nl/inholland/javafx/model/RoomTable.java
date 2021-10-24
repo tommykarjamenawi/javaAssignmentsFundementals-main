@@ -24,12 +24,11 @@ public class RoomTable {
             for (Movie movie : movies) { // loop through list of movies
                 LocalDateTime startTime = LocalDateTime.now().plusMinutes(increaseTime);
                 LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
-                //room.add(new Room(startTime, endTime, movie,seats)); // add movie to a room
                 if (seats == 200) {
-                    roomLogic.addLogicRoom1(new Room(startTime, endTime, movie, seats)); // add movie to a room
+                    roomLogic.addLogicRoom1(new RoomData(startTime, endTime, movie, seats)); // add movie to a room
                 }
                 else{
-                    roomLogic.addLogicRoom2(new Room(startTime, endTime, movie, seats)); // add movie to a room
+                    roomLogic.addLogicRoom2(new RoomData(startTime, endTime, movie, seats)); // add movie to a room
                 }
                 increaseTime += (movie.getDuration() + 15); // increase time to make the times not overlap each other
             }
@@ -38,16 +37,16 @@ public class RoomTable {
     }
 
     public TableView getTableViewRoom(int seats){
-        TableColumn<Room, String> startColumn = new TableColumn<Room, String>("Start");
+        TableColumn<RoomData, String> startColumn = new TableColumn<RoomData, String>("Start");
         startColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        TableColumn<Room, String> endColumn = new TableColumn<>("End");
+        TableColumn<RoomData, String> endColumn = new TableColumn<>("End");
         endColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
-        TableColumn<Room, String> titleColumn = new TableColumn<>("Title");
+        TableColumn<RoomData, String> titleColumn = new TableColumn<>("Title");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-        TableColumn<Room, Integer> seatsColumn = new TableColumn<>("Seats");
+        TableColumn<RoomData, Integer> seatsColumn = new TableColumn<>("Seats");
         seatsColumn.setCellValueFactory(new PropertyValueFactory<>("seats"));
         seatsColumn.setMinWidth(75);
-        TableColumn<Room, Double> priceColumn = new TableColumn<>("Price");
+        TableColumn<RoomData, Double> priceColumn = new TableColumn<>("Price");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         tableview.getColumns().addAll(startColumn, endColumn, titleColumn, seatsColumn, priceColumn);

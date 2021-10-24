@@ -11,15 +11,15 @@ import java.util.*;
 public class Database {
     private final List<Person> persons;
     private final ObservableList<Movie> movies;
-    private final ObservableList<Room> room1;
-    private final ObservableList<Room> room2;
+    private final ObservableList<RoomData> roomData1;
+    private final ObservableList<RoomData> roomData2;
 
     public Database() {
         // initialize the lists
         persons = new ArrayList<>();
         movies = FXCollections.observableArrayList();
-        room1 = FXCollections.observableArrayList();
-        room2 = FXCollections.observableArrayList();
+        roomData1 = FXCollections.observableArrayList();
+        roomData2 = FXCollections.observableArrayList();
         initialize();
     }
 
@@ -90,13 +90,13 @@ public class Database {
 
     public void addMovie(Movie movie){ movies.add(movie); } // add movie to the list
 
-    public ObservableList<Room> getRoom1() { return room1; } // get room1
+    public ObservableList<RoomData> getRoom1() { return roomData1; } // get room1
 
-    public ObservableList<Room> getRoom2() { return room2; } // get room2
+    public ObservableList<RoomData> getRoom2() { return roomData2; } // get room2
 
-    public void addRoom1(Room room){ room1.add(room); }
+    public void addRoom1(RoomData roomData){ roomData1.add(roomData); }
 
-    public void addRoom2(Room room){ room2.add(room); }
+    public void addRoom2(RoomData roomData){ roomData2.add(roomData); }
 
 /*public boolean saveMovies(List<Movie> persons) {
         try (Writer writer = new FileWriter("src/main/java/nl/inholland/javafx/files/movies.csv")) {

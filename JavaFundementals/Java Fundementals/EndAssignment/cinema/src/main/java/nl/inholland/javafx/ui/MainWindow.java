@@ -10,23 +10,22 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.JMetroStyleClass;
-import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.logic.RoomLogic;
 import nl.inholland.javafx.model.*;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Optional;
 
 public class MainWindow {
     private final Stage windowStage;
     private MovieLogic movieLogic;
     private RoomLogic roomLogic;
     private String text;
-    private Room selectedMovie;
+    private RoomData selectedMovie;
     private Label titleHeader;
     private Label roomHeader;
     private Label movieHeader;
@@ -44,6 +43,9 @@ public class MainWindow {
     private Button btnPurchaseTicket;
     private Button btnClearPurchaseField;
     private GridPane bottomPane;
+    private Label purchaseLabel;
+    private Label room1Label;
+    private Label room2Label;
 
     public MainWindow(Person user, Database db) {
         dataBase = db;
@@ -68,14 +70,7 @@ public class MainWindow {
         NavigationBar navigationBar = new NavigationBar();
         MenuBar menuBar = navigationBar.getMenuBar(user, windowStage, dataBase);
 
-        // Add labels
-        Label purchaseLabel = new Label("Purchase Tickets");
-        purchaseLabel.setId("tester");
-        Label room1Label = new Label("room 1");
-        Label room2Label = new Label("room 2");
-        room1Label.setId("room1Label");
-        room2Label.setId("room2Label");
-        errorMessage = new Label("");
+        makeLabels();
 
         // make tableviews
         RoomTable roomTable = new RoomTable(movieLogic.getMovies(), 200, dataBase);
@@ -97,7 +92,7 @@ public class MainWindow {
         // Tableview click events
         room1.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                selectedMovie = (Room)room1.getSelectionModel().getSelectedItem();
+                selectedMovie = (RoomData)room1.getSelectionModel().getSelectedItem();
                 text = "Room 1";
                 roomHeader.setText(text);
                 selectedMovieHeader.setText(selectedMovie.getTitle());
@@ -111,7 +106,7 @@ public class MainWindow {
         });
         room2.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                selectedMovie = (Room)room2.getSelectionModel().getSelectedItem();
+                selectedMovie = (RoomData)room2.getSelectionModel().getSelectedItem();
                 text = "Room 2";
                 roomHeader.setText(text);
                 selectedMovieHeader.setText(selectedMovie.getTitle());
@@ -133,7 +128,7 @@ public class MainWindow {
 
         // make a border and set background around the panes
         centerPane.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.SOLID, null , null)));
-        bottomPane.setBackground(new Background(new BackgroundFill(Color.web("#6B6BC4"), null, Insets.EMPTY)));
+        bottomPane.setBackground(new Background(new BackgroundFill(Color.web("#9d9de5"), null, Insets.EMPTY)));
 
         // add content to container
         container.setTop(topVbox);
@@ -143,30 +138,43 @@ public class MainWindow {
         // deduct amount of seats from the tableviews List
         btnPurchaseTicket.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                if (!nameInput.getText().isEmpty()){
-                    TicketOrder order = new TicketOrder(selectedMovie, nrOfSeats.getValue(), nameInput.getText(), LocalDateTime.now());
-                    if (roomHeader.getText().equals("Room 1")){
-                        for(Room room : roomLogic.getLogicRoom1()){
-                            if (room.getTitle().equals(order.getRoom().getTitle())) {
-                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){ // if the purchase amount results in seats < 0
-                                    errorMessage.setText("Not enough tickets available!");
-                                }
-                                else {
-                                    room.setSeats((room.getSeats() - nrOfSeats.getValue())); // deduct nrOfSeats from the list in the DataBase object
-                                    room1.refresh();// refresh the tableView
+                if (!nameInput.getText().isEmpty() && nrOfSeats.getValue() >= 1){
+                    Alert.AlertType type = Alert.AlertType.CONFIRMATION;
+                    Alert alert = new Alert(type, "");
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.initOwner(windowStage);
+                    alert.getDialogPane().setHeaderText("Confirm purchase");
+                    alert.getDialogPane().setContentText("Do you want complete purchase ticket(s)?");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == ButtonType.OK){
+                        TicketOrder order = new TicketOrder(selectedMovie, nrOfSeats.getValue(), nameInput.getText(), LocalDateTime.now());
+                        if (roomHeader.getText().equals("Room 1")){
+                            for(RoomData roomData : roomLogic.getLogicRoom1()){
+                                if (roomData.getTitle().equals(order.getRoom().getTitle())) {
+                                    if ((roomData.getSeats() - nrOfSeats.getValue()) < 0){ // if the purchase amount results in seats < 0
+                                        errorMessage.setText("Not enough tickets available!");
+                                    }
+                                    else {
+                                        roomData.setSeats((roomData.getSeats() - nrOfSeats.getValue())); // deduct nrOfSeats from the list in the DataBase object
+                                        removeComponentsBottom();
+                                        errorMessage.setText("");
+                                        room1.refresh();// refresh the tableView
+                                    }
                                 }
                             }
                         }
-                    }
-                    else{
-                        for(Room room : roomLogic.getLogicRoom2()){
-                            if (room.getTitle().equals(order.getRoom().getTitle())) {
-                                if ((room.getSeats() - nrOfSeats.getValue()) < 0){ // determines if there are enough tickets available
-                                    errorMessage.setText("Not enough tickets available!");
-                                }
-                                else{
-                                    room.setSeats((room.getSeats() - nrOfSeats.getValue())); // deduct nrOfSeats from the list in the DataBase object
-                                    room2.refresh(); // refresh the tableView
+                        else{
+                            for(RoomData roomData : roomLogic.getLogicRoom2()){
+                                if (roomData.getTitle().equals(order.getRoom().getTitle())) {
+                                    if ((roomData.getSeats() - nrOfSeats.getValue()) < 0){ // determines if there are enough tickets available
+                                        errorMessage.setText("Not enough tickets available!");
+                                    }
+                                    else{
+                                        roomData.setSeats((roomData.getSeats() - nrOfSeats.getValue())); // deduct nrOfSeats from the list in the DataBase object
+                                        removeComponentsBottom();
+                                        errorMessage.setText("");
+                                        room2.refresh(); // refresh the tableView
+                                    }
                                 }
                             }
                         }
@@ -174,7 +182,7 @@ public class MainWindow {
                 }
                 else{
                     if (nrOfSeats.getValue() == 0){
-                        errorMessage.setText("Select desired amount of tickets!");
+                        errorMessage.setText("Select amount of tickets!");
                     }
                     else {
                         errorMessage.setText("Enter your name!");
@@ -193,12 +201,7 @@ public class MainWindow {
         });
 
         Scene scene = new Scene(container);
-
-        // Jmetro for styling
-        JMetro jMetro = new JMetro(Style.DARK);
-        container.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        jMetro.setScene(scene);
-        //scene.getStylesheets().add("style.css"); // apply css styling
+        scene.getStylesheets().add("style.css"); // apply css styling
         windowStage.setScene(scene);
 
         // Show window
@@ -219,8 +222,20 @@ public class MainWindow {
         lblNameHeader = new Label("Name");
         nameInput = new TextField();
         nrOfSeats = new ChoiceBox<>();
-        nrOfSeats.getItems().addAll(1,2,3,4,5,6,7,8,9,10);
+        nrOfSeats.getItems().addAll(0,1,2,3,4,5,6,7,8,9,10);
         nrOfSeats.setValue(0);
+    }
+
+    private void makeLabels(){
+        // make labels
+        purchaseLabel = new Label("Purchase Tickets");
+        purchaseLabel.setId("pageHeader");
+        room1Label = new Label("room 1");
+        room2Label = new Label("room 2");
+        room1Label.setId("room1Label");
+        room2Label.setId("room2Label");
+        errorMessage = new Label("");
+        errorMessage.setId("lblError");
     }
 
     // add components to the GridPane

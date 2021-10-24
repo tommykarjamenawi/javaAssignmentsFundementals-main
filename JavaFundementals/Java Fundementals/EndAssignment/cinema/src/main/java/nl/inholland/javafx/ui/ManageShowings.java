@@ -10,9 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.JMetroStyleClass;
-import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.logic.RoomLogic;
@@ -27,30 +24,25 @@ public class ManageShowings {
     private Database dataBase;
     private MovieLogic movieLogic;
     private RoomLogic roomLogic;
-
     private GridPane topPane;
     private GridPane centerPane;
     private GridPane bottomPane;
     private GridPane addingPane;
     private HBox errorHBox;
-
     private Movie selectedcbMovie;
     private String text;
-    private Room selectedMovie;
+    private RoomData selectedMovie;
     private Label lblErrorMessage;
-
     private Label lblMovieTitleHeader;
     private ComboBox<Movie> cbMovie;
     private Label lblStartTimeHeader;
     private DatePicker datePicker;
     private TextField hourPicker;
-
     private Label lblRoomHeader;
     private ChoiceBox<String> cbRoom;
     private Label lblEndTimeHeader;
     private Label lblEndTime;
     private Button btnAddShowing;
-
     private Label lblNoOfSeatsHeader;
     private Label lblNoOfSeats;
     private Label lblPriceHeader;
@@ -75,6 +67,7 @@ public class ManageShowings {
         NavigationBar navigationBar = new NavigationBar();
         MenuBar menuBar = navigationBar.getMenuBar(user, window, dataBase);
         Label lblManageShowings = new Label("Manage showings");
+        lblManageShowings.setId("pageHeader");
 
         topPane.add(menuBar, 1, 0);
         topPane.add(lblManageShowings, 1, 1);
@@ -97,7 +90,7 @@ public class ManageShowings {
         // Tableview click events
         room1.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                selectedMovie = (Room)room1.getSelectionModel().getSelectedItem();
+                selectedMovie = (RoomData)room1.getSelectionModel().getSelectedItem();
                 int index = room1.getSelectionModel().getSelectedIndex();
                 cbMovie.getItems().clear(); // remove the content of the comboBox
                 for (Movie movie : movieLogic.getMovies()){
@@ -114,7 +107,7 @@ public class ManageShowings {
 
         room2.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                selectedMovie = (Room)room2.getSelectionModel().getSelectedItem();
+                selectedMovie = (RoomData)room2.getSelectionModel().getSelectedItem();
                 int index = room2.getSelectionModel().getSelectedIndex();
                 cbMovie.getItems().clear(); // remove the content of the comboBox
                 ObservableList<Movie> tempList = movieLogic.getMovies();
@@ -174,6 +167,24 @@ public class ManageShowings {
             }
         });
 
+        // Check if user is filled the date/time in the correct format
+        lblEndTime.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if (hourPicker.getText().length() >= 5){
+                    try
+                    {
+                        LocalDateTime dateTime = LocalDateTime.parse((datePicker.getValue().toString() + "T" + hourPicker.getText()));
+                    }
+                    catch(Exception e)
+                    {
+                        //new Alert(Alert.AlertType.ERROR, "Provide Correct Date or Hour format!").show();
+                        lblErrorMessage.setText("Provide Correct Date or Hour format!");
+                    }
+                }
+            }
+        });
+
         // add listener to choiceBox
         cbRoom.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -203,34 +214,44 @@ public class ManageShowings {
                     LocalDateTime dateTime2 = dateTime1.plusMinutes(selectedcbMovie.getDuration());
                     String temp2 = dateTime2.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
-                    Room tempRoom = new Room(dateTime1, dateTime2, selectedcbMovie, Integer.parseInt(lblNoOfSeats.getText()));
+                    RoomData tempRoomData = new RoomData(dateTime1, dateTime2, selectedcbMovie, Integer.parseInt(lblNoOfSeats.getText()));
                     // check if inserted time overlaps other movie times in the designated room.
                     if(lblNoOfSeats.getText().equals("200")){
                         int count = 1;
-                        for(Room room : roomLogic.getLogicRoom1()){
-                            Duration diff1 = Duration.between(room.getStart(), dateTime1);
-                            Duration diff2 = Duration.between(room.getEnd(), dateTime2);
-                            Duration diff3 = Duration.between(room.getStart(), dateTime2);
-                            Duration diff4 = Duration.between(room.getEnd(), dateTime1);
+                        int countFirstMovie = 1;
+                        for(RoomData roomData : roomLogic.getLogicRoom1()){
+                            Duration diff1 = Duration.between(roomData.getStart(), dateTime1);
+                            Duration diff2 = Duration.between(roomData.getEnd(), dateTime2);
+                            Duration diff3 = Duration.between(roomData.getStart(), dateTime2);
+                            Duration diff4 = Duration.between(roomData.getEnd(), dateTime1);
+                            if (countFirstMovie == 1){ // Check if movie is earlier than a movie in the tableview
+                                if (dateTime1.isBefore(roomData.getStart()) || dateTime1.isBefore(roomData.getEnd()) || dateTime2.isBefore(roomData.getStart()) || dateTime2.isBefore(roomData.getEnd())){
+                                    //new Alert(Alert.AlertType.WARNING, "Provide date/time later than a movie in the Tableview!").show();
+                                    lblErrorMessage.setText("date/time must be later than an existing showing ");
+                                    break;
+                                }
+                            }
                             if (count == roomLogic.getLogicRoom1().size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
-                                roomLogic.addLogicRoom1(tempRoom);
+                                roomLogic.addLogicRoom1(tempRoomData);
                                 room1.refresh();
                             }
                             if (!(diff1.toMinutes() >= 15) || !(diff2.toMinutes() >= 15) || !(diff3.toMinutes() >= 15) || !(diff4.toMinutes() >= 15)){
                                 lblErrorMessage.setText("Showing cannot overlap in room 1!");
                             }
                             count++;
+                            countFirstMovie++;
                         }
                     }
                     else{
                         int count = 1;
-                        for(Room room : roomLogic.getLogicRoom2()){
-                            Duration diff1 = Duration.between(room.getStart(), dateTime1);
-                            Duration diff2 = Duration.between(room.getEnd(), dateTime2);
-                            Duration diff3 = Duration.between(room.getStart(), dateTime2);
-                            Duration diff4 = Duration.between(room.getEnd(), dateTime1);
+                        for(RoomData roomData : roomLogic.getLogicRoom2()){
+                            // calculate the difference between the movies
+                            Duration diff1 = Duration.between(roomData.getStart(), dateTime1);
+                            Duration diff2 = Duration.between(roomData.getEnd(), dateTime2);
+                            Duration diff3 = Duration.between(roomData.getStart(), dateTime2);
+                            Duration diff4 = Duration.between(roomData.getEnd(), dateTime1);
                             if (count == roomLogic.getLogicRoom2().size() && ((diff1.toMinutes() >= 15) && (diff2.toMinutes() >= 15) && (diff3.toMinutes() >= 15) && (diff4.toMinutes() >= 15))){
-                                roomLogic.addLogicRoom2(tempRoom);
+                                roomLogic.addLogicRoom2(tempRoomData);
                                 room2.refresh();
                             }
                             if (!(diff1.toMinutes() >= 15) || !(diff2.toMinutes() >= 15) || !(diff3.toMinutes() >= 15) || !(diff4.toMinutes() >= 15)){
@@ -253,12 +274,7 @@ public class ManageShowings {
         });
 
         Scene scene = new Scene(container);
-
-        // Jmetro for styling
-        JMetro jMetro = new JMetro(Style.DARK);
-        container.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        jMetro.setScene(scene);
-        //scene.getStylesheets().add("style.css"); // apply css styling
+        scene.getStylesheets().add("style.css"); // apply css styling
         window.setScene(scene);
 
         // Show window

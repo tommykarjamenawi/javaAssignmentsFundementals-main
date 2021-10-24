@@ -3,9 +3,9 @@ package nl.inholland.javafx.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Room {
+public class RoomData {
 
-    public Room(LocalDateTime start, LocalDateTime end, Movie movie, int seats) {
+    public RoomData(LocalDateTime start, LocalDateTime end, Movie movie, int seats) {
         this.movie = movie;
         this.start = start;
         this.startTime = start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
@@ -16,7 +16,7 @@ public class Room {
         this.price = movie.getPrice();
     }
 
-    public Room(String startTime, String endTime, Movie movie, int seats) {
+    public RoomData(String startTime, String endTime, Movie movie, int seats) {
         this.movie = movie;
         this.start = LocalDateTime.parse(startTime);
         this.startTime = startTime;
@@ -27,9 +27,7 @@ public class Room {
         this.price = movie.getPrice();
     }
 
-    public Room(){
-
-    }
+    public RoomData(){} // to make an temporary empty roomData
 
     // Room properties
     private Movie movie;

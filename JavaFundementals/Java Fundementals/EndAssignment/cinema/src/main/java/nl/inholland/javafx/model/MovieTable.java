@@ -18,12 +18,12 @@ public class MovieTable {
     }
 
     public TableView getTableViewRoom(){
-        TableColumn<Room, String> titleColumn = new TableColumn<>("Title");
+        TableColumn<RoomData, String> titleColumn = new TableColumn<>("Title");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-        TableColumn<Room, Integer> durationColumn = new TableColumn<>("Duration");
+        TableColumn<RoomData, Integer> durationColumn = new TableColumn<>("Duration");
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
         durationColumn.setMinWidth(100);
-        TableColumn<Room, Double> priceColumn = new TableColumn<>("Price");
+        TableColumn<RoomData, Double> priceColumn = new TableColumn<>("Price");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         tableview.getColumns().addAll(titleColumn, durationColumn, priceColumn);

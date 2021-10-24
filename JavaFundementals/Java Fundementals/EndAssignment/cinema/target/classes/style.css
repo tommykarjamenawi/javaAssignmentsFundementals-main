@@ -1,11 +1,11 @@
-/*.root{
+.root{
     -fx-font-family: "Arial Black";
-    -fx-font-size: 11pt;
+    -fx-font-size: 10pt;
     -fx-text-background-color: #1a1a28;
     -fx-background-color: #9d9de5;
 }
 .label{
-    -fx-text-background-color: #a6a6f4;
+    -fx-text-background-color: #6060de;
 }
 
 .table-view .column-header-background .filler .corner{
@@ -22,7 +22,7 @@
 .menu:hover, .menu-item:hover{
     -fx-background-color: #6222e6;
 }
-#tester{
+#pageHeader{
     -fx-font-family: "Arial Black";
     -fx-font-size: 20pt;
     -fx-text-background-color: #4040D8FF;
@@ -32,4 +32,7 @@
 }
 #room1Label, #room2Label{
     -fx-text-background-color: #4040D8FF;
-}*/
+}
+#lblError{
+    -fx-text-background-color: #ff0011;
+}

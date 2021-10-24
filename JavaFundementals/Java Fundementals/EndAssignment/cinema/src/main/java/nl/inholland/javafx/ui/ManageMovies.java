@@ -7,9 +7,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.JMetroStyleClass;
-import jfxtras.styles.jmetro.Style;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.model.*;
@@ -41,6 +38,7 @@ public class ManageMovies {
         Stage window = new Stage();
         window.setTitle("Fantastic Cinema -- -- manage movies -- username: " + user.getUserName());
         lblErrorMessage = new Label("");
+        lblErrorMessage.setId("#lblError");
 
         // Make container
         BorderPane container = new BorderPane();
@@ -50,6 +48,7 @@ public class ManageMovies {
         NavigationBar navigationBar = new NavigationBar();
         MenuBar menuBar = navigationBar.getMenuBar(user, window, dataBase);
         Label lblManageShowings = new Label("Manage movies");
+        lblManageShowings.setId("pageHeader");
 
         topPane.add(menuBar, 1, 0);
         topPane.add(lblManageShowings, 1, 1);
@@ -110,11 +109,7 @@ public class ManageMovies {
         container.setBottom(bottomPane);
 
         Scene scene = new Scene(container);
-        // Jmetro for styling
-        //scene.getStylesheets().add("style.css"); // apply css styling
-        JMetro jMetro = new JMetro(Style.DARK);
-        container.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        jMetro.setScene(scene);
+        scene.getStylesheets().add("style.css"); // apply css styling
         window.setScene(scene);
 
         // Show window
@@ -133,7 +128,7 @@ public class ManageMovies {
         addingPane.setHgap(40);
         addingPane.setVgap(10);
         errorHBox = new HBox();
-        addingPane.setVisible(false); // Disable add Movie field on startup
+        //addingPane.setVisible(false); // Disable add Movie field on startup
         errorHBox.getChildren().add(lblErrorMessage);
     }
 
