@@ -1,15 +1,15 @@
-# password validation
+# End Assignment
 
-This is the password validation assignment week 4
+This is the End assignment for the java fundamentals exam
 
 ###account for Admin
 
-####username: test
+####username: mary91
 
-####password: test
+####password: admin
 
 ###account for User
 
-####username: tester
+####username: bob76
 
-####password: tester
+####password: user
