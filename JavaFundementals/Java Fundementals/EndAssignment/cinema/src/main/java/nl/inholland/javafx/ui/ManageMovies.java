@@ -1,5 +1,7 @@
 package nl.inholland.javafx.ui;
 
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -7,6 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.model.*;
@@ -100,6 +103,21 @@ public class ManageMovies {
                 removeComponentsAddingPane();
                 lblErrorMessage.setText("");
                 addingPane.setVisible(false);
+            }
+        });
+
+        // modal windows closing request
+        window.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        new ExitConfirmation().closePopup(window);
+                    }
+                });
             }
         });
 

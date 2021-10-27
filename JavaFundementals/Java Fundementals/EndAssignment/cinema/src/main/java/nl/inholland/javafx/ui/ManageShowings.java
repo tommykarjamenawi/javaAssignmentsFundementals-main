@@ -1,8 +1,10 @@
 package nl.inholland.javafx.ui;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -10,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.logic.RoomLogic;
@@ -79,13 +82,13 @@ public class ManageShowings {
         // make tableview for room 1 and room 2
         RoomTable roomTable = new RoomTable(movieLogic.getMovies(), 200, dataBase);
         TableView room1 = roomTable.getTableViewRoom(200);
-        room1.setMinWidth(650);
+        room1.setMinWidth(580);
         ObservableList<Movie> moviesList = movieLogic.getMovies();
         Collections.reverse(moviesList); // reverse the list
         RoomTable roomTable2 = new RoomTable(moviesList, 100, dataBase);
         TableView room2 = roomTable2.getTableViewRoom(100);
         Collections.reverse(moviesList); // reverse the list again to make the order default again
-        room2.setMinWidth(650);
+        room2.setMinWidth(580);
 
         // Tableview click events
         room1.setOnMouseClicked((MouseEvent event) -> {
@@ -125,6 +128,21 @@ public class ManageShowings {
             }
         });
         addComponentsAddingField();
+
+        // modal windows closing request
+        window.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        new ExitConfirmation().closePopup(window);
+                    }
+                });
+            }
+        });
 
         // add content to GridPanes
         centerPane.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.SOLID, null , null)));
@@ -173,12 +191,11 @@ public class ManageShowings {
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                 if (hourPicker.getText().length() >= 5){
                     try
-                    {
+                    { //  Check if the string can't be parsed into a LocalDateTime variable.
                         LocalDateTime dateTime = LocalDateTime.parse((datePicker.getValue().toString() + "T" + hourPicker.getText()));
                     }
                     catch(Exception e)
                     {
-                        //new Alert(Alert.AlertType.ERROR, "Provide Correct Date or Hour format!").show();
                         lblErrorMessage.setText("Provide Correct Date or Hour format!");
                     }
                 }

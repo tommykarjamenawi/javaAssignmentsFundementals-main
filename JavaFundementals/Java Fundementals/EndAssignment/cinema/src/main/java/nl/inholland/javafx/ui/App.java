@@ -1,11 +1,14 @@
 package nl.inholland.javafx.ui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 import jfxtras.styles.jmetro.Style;
@@ -61,9 +64,24 @@ public class App extends Application {
         Button loginButton = new Button("Log in");
 
         // Add attributes
-        userInput.setPromptText("Enter your username...");
-        passwordInput.setPromptText("Enter your password...");
+        userInput.setPromptText("Enter your username");
+        passwordInput.setPromptText("Enter your password");
         loginButton.setDefaultButton(true);
+
+        // modal
+        screen.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        new ExitConfirmation().closePopup(screen);
+                    }
+                });
+            }
+        });
 
         // Login button click event
         loginButton.setOnAction(actionEvent -> {
@@ -91,10 +109,7 @@ public class App extends Application {
 
         // Set scene
         Scene scene = new Scene(gridPane);
-        //add JMetro
-        JMetro jMetro = new JMetro(Style.DARK);
-        gridPane.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        jMetro.setScene(scene);
+        scene.getStylesheets().add("style.css"); // apply css styling
 
         window.setScene(scene);
 

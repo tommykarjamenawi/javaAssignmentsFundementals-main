@@ -17,6 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+
 public class App extends Application {
     @Override
     public void start(Stage window) throws Exception {
@@ -78,7 +81,18 @@ public class App extends Application {
             }
         });
 
+
+
         HBox form = new HBox();
+        String test = "";
+        Label serialized = new Label(test);
+        form.getChildren().add(serialized);
+        for (Person p : db.getPeople()){
+            FileOutputStream fileout = new FileOutputStream("PersonInfo.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileout);
+            out.writeObject(p);
+            out.close();
+        }
         form.setPadding(new Insets(10));
         form.setSpacing(10);
         form.getChildren().addAll(firstNameInput, lastNameInput, birthdateInput, addButton, deleteButton);

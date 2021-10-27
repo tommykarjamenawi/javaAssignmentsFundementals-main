@@ -1,6 +1,12 @@
 package nl.inholland.javafx.ui;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,12 +18,15 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import nl.inholland.javafx.dal.Database;
 import nl.inholland.javafx.logic.MovieLogic;
 import nl.inholland.javafx.logic.RoomLogic;
 import nl.inholland.javafx.model.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public class MainWindow {
@@ -46,6 +55,7 @@ public class MainWindow {
     private Label purchaseLabel;
     private Label room1Label;
     private Label room2Label;
+    private TextField txtTitleFilter;
 
     public MainWindow(Person user, Database db) {
         dataBase = db;
@@ -75,19 +85,35 @@ public class MainWindow {
         // make tableviews
         RoomTable roomTable = new RoomTable(movieLogic.getMovies(), 200, dataBase);
         TableView room1 = roomTable.getTableViewRoom(200);
-        room1.setMinWidth(650);
+        room1.setMinWidth(580);
         ObservableList<Movie> moviesList = movieLogic.getMovies();
         Collections.reverse(moviesList); // reverse the list
         RoomTable roomTable2 = new RoomTable(moviesList, 100, dataBase);
         TableView room2 = roomTable2.getTableViewRoom(100);
         Collections.reverse(moviesList); // reverse the list again to make the order default again
-        room2.setMinWidth(650);
+        room2.setMinWidth(580);
 
+        txtTitleFilter = new TextField(); // initialize filter
         // add objects to the wrappers
-        topVbox.getChildren().addAll(menuBar, purchaseLabel);
+        topVbox.getChildren().addAll(menuBar, purchaseLabel, txtTitleFilter);
 
         // set default purchase info
         setDefaultPurchaseInfo();
+
+        // modal windows closing request
+        windowStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        new ExitConfirmation().closePopup(windowStage);
+                    }
+                });
+            }
+        });
 
         // Tableview click events
         room1.setOnMouseClicked((MouseEvent event) -> {
@@ -192,6 +218,23 @@ public class MainWindow {
             }
         });
 
+        // listener for filter textfield
+        txtTitleFilter.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if (txtTitleFilter.getText().length() >= 2){
+                    room1.setItems(filterList(roomLogic.getLogicRoom1(), txtTitleFilter.getText()));
+                    room2.setItems(filterList(roomLogic.getLogicRoom2(), txtTitleFilter.getText()));
+                }
+                else{
+                    room1.setItems(roomLogic.getLogicRoom1());
+                    room2.setItems(roomLogic.getLogicRoom2());
+                }
+            }
+        });
+
+
+
         //Clear the purchase field upon click of the button
         btnClearPurchaseField.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
@@ -224,6 +267,19 @@ public class MainWindow {
         nrOfSeats = new ChoiceBox<>();
         nrOfSeats.getItems().addAll(0,1,2,3,4,5,6,7,8,9,10);
         nrOfSeats.setValue(0);
+    }
+
+    // Filter the tableview
+    private ObservableList<RoomData> filterList(List<RoomData> list, String searchText){
+        List<RoomData> filteredList = new ArrayList<>();
+        for (RoomData roomData : list){
+            if(searchFindsOrder(roomData, searchText)) filteredList.add(roomData);
+        }
+        return FXCollections.observableList(filteredList);
+    }
+
+    private boolean searchFindsOrder(RoomData roomData, String searchText){
+        return (roomData.getTitle().toLowerCase().contains(searchText.toLowerCase()));
     }
 
     private void makeLabels(){
